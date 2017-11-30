@@ -1,0 +1,80 @@
+Homework 2
+-----------
+
+
+Simulate the M/M/2/2+5 system (i.e. 2 servers with the common buffer of capacity 5) 
+by means of discrete event simulation. Investigate the following two cases:
+  * System A: arrival rate lambda=2, service rate of each server mu=1
+  * System B: lambda=10, mu=1
+
+1. (15%) Test your random number generator (RNG):
+   1.1 Does your RNG generate random numbers?
+   1.2 How do you initialize the seed of your RNG? 
+   1.3 Generate two sequences of 1000000 numbers each, for every sequence use a different seed. 
+       Are these two sequences different? How do you know this?    
+
+2. (30%) Eliminate the warm-up period separately for each of the following cases by applying 
+   the Welch graphical procedure:
+   2.1 System A with the initial condition x(t=0)=0, i.e. the system is empty at t=0.
+   2.2 System A with the initial condition x(t=0)=7, i.e. the system is full at t=0.
+   2.3 System B with the initial condition x(t=0)=0, i.e. the system is empty at t=0.
+   2.4 System B with the initial condition x(t=0)=4, i.e. there are 4 customers in the system at t=0.
+
+   Change the seed of your RNG if you run multiple simulations to investigate a nonstationary state.
+
+
+3. (45%) For the stationary regions of the Systems A and B identified in item (2) find: 
+   3.1 Blocking probability.
+   3.2 Mean time a customer spends in the system.
+   3.3 Mean number of customers in the system.
+   Find the confidence intervals for (3.1), (3.2) and (3.3). Assume the 90% confidence level. 
+
+4. 10% credit will be given for the project report itself, i.e. its organization, clarity,
+   nice and informative presentation of your results. 
+
+ 
+ 
+
+Submission guidelines
+---------------------
+
+* Due date: Monday, Dec. 11, noon (Chicago time)
+
+* Absolutely no late submissions. I must meet the grade posting deadline set by the Registrar 
+  so late submissions will NOT be accepted. I give you as much time as I can.
+
+* Your project report should include:
+  - description of methodology used to solve the problem;
+  - numerical results and their analysis;
+  - observations/conclusions
+  and
+  - source code of your simulation program.
+
+* Your submission should consist of two items ONLY, i.e. your project report + printout 
+  of the source code used to obtain your results. All your results should be included
+  in the project report. Do NOT submit a 1-page project report and 100 documents/files/attachments. 
+  Such submissions will be disregarded.
+
+* Note again that not only your results will be evaluated (see item (4) of the problem statement). 
+  The format and organization of your report, and the way you express and communicate 
+  your ideas (clarity, coherence, logical reasoning, conclusions) affect your grade as well.
+
+* Absolutely no handwritten submissions.
+      
+* Teamwork is allowed and encouraged (max. 3 students/team). Individual submissions 
+  are also OK.
+ 
+* One submission per team only. Do NOT submit multiple copies of your project report 
+  (I will penalize this). It's very confusing.
+
+* Please put down your names (last, first, middle), student IDs, and section IDs (live, online, Bangalore) 
+  on the front page of your project report. 
+
+* Put a hard copy of your submission into my mailbox in the CS Dept. office
+  or email a soft copy to me (project report in the PDF format ONLY + source code). 
+  Live section: please submit a hard copy if you can.
+
+
+Good luck!
+
+
