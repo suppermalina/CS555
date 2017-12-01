@@ -1,5 +1,7 @@
 package Model;
 
+import ExecutionalInstances.StatisticalClock;
+
 public class Test {
 	private synchronized void sleeper() {
 		try {
@@ -10,9 +12,9 @@ public class Test {
 		}
 	}
 	public static void main(String[] args) {
-		System.out.println(StatisticalClock.getTime());
+		System.out.println(StatisticalClock.CLOCK());
 		new Test().sleeper();
-		System.out.println(StatisticalClock.getTime());
+		System.out.println(StatisticalClock.CLOCK());
 	}
 
 }

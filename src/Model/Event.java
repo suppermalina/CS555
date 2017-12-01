@@ -16,6 +16,12 @@ public interface Event {
 	abstract String getTyp();
 	abstract void setInitialTime(long initialTime);
 	abstract void setTerminalTime(long terminalTime);
-	
-	abstract class Task extends TimerTask{}
+	abstract long getInterval();
+	class InitiateTimerTask extends TimerTask{
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			
+		}};
 }
