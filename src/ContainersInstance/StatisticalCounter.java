@@ -13,9 +13,11 @@ import Model.Task;
  *
  */
 public class StatisticalCounter extends Containers {
-	public StatisticalCounter(String type, int ID) {
-		super(type, ID);
-		// TODO Auto-generated constructor stub
+	private static int counterID = 1;
+	public StatisticalCounter() {
+		this.container = new ArrayList<Task>();
+		this.type = "COUNTER";
+		this.ID = counterID++;
 	}
 
 	private Deque<Task> counter = new LinkedList<Task>()	;

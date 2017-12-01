@@ -14,39 +14,8 @@ import java.util.*;
  */
 public abstract class Containers {
 	protected Collection<Task> container;
-	protected Deque<Task> list;
-	private String type;
-	private int ID;
-	
-	protected Containers(String type, int ID) {
-		if (type.equalsIgnoreCase("server")) {
-			this.list = new LinkedList<Task>();
-		} else if (type.equalsIgnoreCase("queue")) {
-			this.container = new LinkedList<Task>();
-		} else if (type.equalsIgnoreCase("taklist")) {
-			this.container = new PriorityQueue<Task>(10, new Comparator<Task>() {
-
-				@Override
-				public int compare(Task eOne, Task eTwo) {
-					// TODO Auto-generated method stub
-					long a = eOne.getInterval();
-					long b = eTwo.getInterval();
-					if (a < b) {
-						return -1;
-					} else if (a > b) {
-						return 1;
-					} else return 0;
-				}
-				
-			});
-		} else if (type.equalsIgnoreCase("statelist")) {
-			this.container = new ArrayList<Task>();
-		} else if (type.equals("counter")) {
-			this.container = new ArrayList<Task>();
-		} else {}
-		this.type = type;
-		this.ID = ID;
-	}
+	protected String type;
+	protected int ID;
 	
 	protected abstract void takeTaskIn(Task e);
 	protected abstract Task popTaskOut();

@@ -12,11 +12,13 @@ import Model.Task;
  * @author mali
  *
  */
-public class Queue extends Containers {
+public class Queueing extends Containers {
 	private Deque<Task> queue = new LinkedList<Task>(container);
-	public Queue(String type, int ID) {
-		super(type, ID);
-		// TODO Auto-generated constructor stub
+	private static int queueID = 1;
+	public Queueing() {
+		this.container = new LinkedList<Task>();
+		this.type = "QUEUE";
+		this.ID = queueID++;
 	}
 
 	/* (non-Javadoc)

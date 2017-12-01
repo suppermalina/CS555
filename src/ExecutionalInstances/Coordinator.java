@@ -13,8 +13,6 @@ import java.util.Observer;
 public final class Coordinator implements Observer {
 	private static volatile Coordinator instance = null;
 
-    private Coordinator() {}
-
     public static Coordinator getInstance() {
         if (instance == null) {
             synchronized(Coordinator.class) {

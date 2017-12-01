@@ -14,14 +14,7 @@ import java.util.*;
 public interface Event {
 	abstract int getId();
 	abstract String getTyp();
-	abstract void setInitialTime(long initialTime);
-	abstract void setTerminalTime(long terminalTime);
-	abstract long getInterval();
-	class InitiateTimerTask extends TimerTask{
-
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			
-		}};
+	abstract long getInitialTime();
+	abstract long getTerminalTime();
+	abstract double getInterval();
 }

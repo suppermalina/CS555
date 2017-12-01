@@ -14,9 +14,25 @@ import Model.Task;
  *
  */
 public class TaskList extends Containers {
-	public TaskList(String type, int ID) {
-		super(type, ID);
-		// TODO Auto-generated constructor stub
+	private static int taskListID = 1;
+	public TaskList() {
+		this.container = new PriorityQueue<Task>(10, new Comparator<Task>() {
+
+			@Override
+			public int compare(Task eOne, Task eTwo) {
+				// TODO Auto-generated method stub
+				double a = eOne.getInterval();
+				double b = eTwo.getInterval();
+				if (a < b) {
+					return -1;
+				} else if (a > b) {
+					return 1;
+				} else return 0;
+			}
+			
+		});
+		this.type = "TASKLIST";
+		this.ID = taskListID++;
 	}
 	private PriorityQueue<Task> Tasklist = new PriorityQueue<Task>(container);
 	

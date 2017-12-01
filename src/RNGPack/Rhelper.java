@@ -7,7 +7,6 @@ import org.rosuda.JRI.Rengine;
 public final class Rhelper {
 	private static List<Double> list;
 	private final static Rengine ENGINE = new Rengine(new String[] {"--vanilla"}, false, null);
-    private Rhelper() {}
     
     public static void setSeed(long seed) {
     	ENGINE.eval("set.seed(" + seed + ")");

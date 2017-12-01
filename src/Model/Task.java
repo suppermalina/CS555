@@ -16,17 +16,10 @@ import ExecutionalInstances.Coordinator;
 public abstract class Task extends Observable implements Event {
 	protected int id;
 	protected String type;
-	protected long getState;
 	protected long initialTime;
 	protected long terminalTime;
-	protected TimerTask task;
-	protected Timer timer;
-	protected Task(String type, int id) {
-		this.type = type;
-		this.id = id;
-		task = new InitiateTimerTask();
-		timer = new Timer();
-	}
+	protected double interval;
+
 	/* (non-Javadoc)
 	 * @see Model.Event#getId()
 	 */
@@ -42,39 +35,23 @@ public abstract class Task extends Observable implements Event {
 	@Override
 	public String getTyp() {
 		// TODO Auto-generated method stub
-		return type;
+		return type + " " + id;
 	}
 
-	/* (non-Javadoc)
-	 * @see Model.Event#setInitialTime(long)
-	 */
 	@Override
-	public void setInitialTime(long initialTime) {
+	public long getInitialTime() {
 		// TODO Auto-generated method stub
-		this.initialTime = initialTime;
-	}
-
-	/* (non-Javadoc)
-	 * @see Model.Event#setTerminalTime(long)
-	 */
-	@Override
-	public void setTerminalTime(long terminalTime) {
-		// TODO Auto-generated method stub
-		this.terminalTime = terminalTime;
-
-	}
-	
-	protected long getInitialTime() {
 		return this.initialTime;
+		
 	}
-	
-	protected long getTermialTime() {
+	@Override
+	public long getTerminalTime() {
+		// TODO Auto-generated method stub
 		return this.terminalTime;
 	}
-
-	public long getInterval() {
+	public double getInterval() {
 		// TODO Auto-generated method stub
-		return this.terminalTime - this.initialTime;
+		return interval;
 	}
 
 }

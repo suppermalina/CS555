@@ -4,7 +4,6 @@
 package ContainersInstance;
 
 import java.util.*;
-import java.util.Collection;
 
 import Model.Containers;
 import Model.Task;
@@ -14,10 +13,15 @@ import Model.Task;
  *
  */
 public class Server extends Containers {
+
+	private static Integer serverID = 1;
 	private List<Task> server = new ArrayList<Task>(container);
+	private double miu;
 	
-	public Server(String type, int ID) {
-		super(type, ID);
+	public Server() {
+		this.container = new LinkedList<Task>();
+		this.type = "SERVER";
+		this.ID = serverID++;
 	}
 
 	public synchronized boolean isFull() {

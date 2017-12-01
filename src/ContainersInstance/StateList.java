@@ -12,9 +12,11 @@ import Model.Task;
  *
  */
 public class StateList extends Containers {
-	public StateList(String type, int ID) {
-		super(type, ID);
-		// TODO Auto-generated constructor stub
+	private static int stateListID = 1;
+	public StateList() {
+		this.container = new ArrayList<Task>();
+		this.type = "STATELIST";
+		this.ID = stateListID++;
 	}
 	
 	protected synchronized boolean isEmpty() {

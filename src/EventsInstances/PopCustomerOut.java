@@ -3,6 +3,10 @@
  */
 package EventsInstances;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import ExecutionalInstances.RandomNumberGenerator;
 import Model.Task;
 
 /**
@@ -10,10 +14,25 @@ import Model.Task;
  *
  */
 public class PopCustomerOut extends Task {
+	private static int popCounter = 1;
+	private double miu;
+	private Timer timer;
+	private void setInterval() {
+		this.interval = RandomNumberGenerator.getInstance(miu);
+	}
+	public PopCustomerOut() {
+		this.type = "poping";
+		this.id = popCounter++;
+		this.timer = new Timer();
+	}
+	private class ServiceTimeTask extends TimerTask {
 
-	protected PopCustomerOut(String type, int id) {
-		super(type, id);
-		// TODO Auto-generated constructor stub
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 
 }

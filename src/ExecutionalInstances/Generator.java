@@ -8,11 +8,16 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
-import ContainersInstance.Queue;
+import org.rosuda.JRI.Rengine;
+
+import ContainersInstance.Queueing;
 import ContainersInstance.Server;
 import ContainersInstance.StateList;
 import ContainersInstance.StatisticalCounter;
 import ContainersInstance.TaskList;
+import EventsInstances.Customer;
+import EventsInstances.GenerateCustomer;
+import EventsInstances.PopCustomerOut;
 import Model.BaseGenerator;
 import Model.Containers;
 import Model.Event;
@@ -22,32 +27,19 @@ import Model.Event;
  *
  */
 public class Generator implements BaseGenerator {
-	
+	private final static Rengine ENGINE = new Rengine(new String[] {"--vanilla"}, false, null);
 	/* (non-Javadoc)
 	 * @see Model.BaseGenerator#getEvent(int, java.lang.String)
 	 */
 	@Override
-	public Event getEvent(String type, int ID) {
+	public Event getEvent(String type) {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see Model.BaseGenerator#getContainer(int, java.lang.String)
-	 */
-	@Override
-	public Containers getContainer(String type, int ID) {
-		// TODO Auto-generated method stub
-		if (type.equalsIgnoreCase("server")) {
-			return new Server(type, ID);
-		} else if (type.equalsIgnoreCase("queue")) {
-			return new Queue(type, ID);
-		} else if (type.equalsIgnoreCase("eventlist")) {
-			return new TaskList(type, ID);
-		} else if (type.equalsIgnoreCase("statelist")) {
-			return new StateList(type, ID);
-		} else if (type.equals("counter")) {
-			return new StatisticalCounter(type, ID);
+		if (type.equalsIgnoreCase("customer")) {
+			return new Customer();
+		} else if (type.equalsIgnoreCase("generating")) {
+			return new GenerateCustomer();
+		} else if (type.equalsIgnoreCase("poping")) {
+			return new PopCustomerOut();
 		} else {
 			System.exit(-1);
 			new Exception("Illegal type!!!");
@@ -56,21 +48,26 @@ public class Generator implements BaseGenerator {
 	}
 
 	/* (non-Javadoc)
-	 * @see Model.BaseGenerator#getInterval(long)
+	 * @see Model.BaseGenerator#getContainer(int, java.lang.String)
 	 */
 	@Override
-	public double getInterval(long rate) {
+	public Containers getContainer(String type) {
 		// TODO Auto-generated method stub
-		return 0;
+		if (type.equalsIgnoreCase("server")) {
+			return new Server();
+		} else if (type.equalsIgnoreCase("queue")) {
+			return new Queueing();
+		} else if (type.equalsIgnoreCase("eventlist")) {
+			return new TaskList();
+		} else if (type.equalsIgnoreCase("statelist")) {
+			return new StateList();
+		} else if (type.equals("counter")) {
+			return new StatisticalCounter();
+		} else {
+			System.exit(-1);
+			new Exception("Illegal type!!!");
+			return null;
+		}
 	}
-
-	/* (non-Javadoc)
-	 * @see Model.BaseGenerator#getRandom()
-	 */
-	@Override
-	public double getRandom() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
+	
 }
