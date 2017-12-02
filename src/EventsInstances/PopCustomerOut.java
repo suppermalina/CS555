@@ -8,6 +8,7 @@ import java.util.TimerTask;
 
 import ExecutionalInstances.Controller;
 import ExecutionalInstances.RandomNumberGenerator;
+import ExecutionalInstances.StatisticalClock;
 import Model.Observed;
 import Model.Task;
 
@@ -17,28 +18,34 @@ import Model.Task;
  */
 public class PopCustomerOut extends Task implements Observed {
 	private int targetCustID;
+	
+	// This is used to mark this object is the ith specific task being generated
 	private static int popCounter = 1;
+	
+	// idInTaskList is used to find this task object in task list. It will be
+	// stored as the key value into a hash-map with the object as the value 
+	private int idInTaskList;
+	
+	// The service rate
 	private double miu;
 	private Timer timer;
+	// Supposed to have a controller, but not sure. May be it will be removed later
 	private Controller controller;
-	private int idOfCusBeingPoped;
-	private void setInterval() {
-		this.interval = RandomNumberGenerator.getInstance(miu);
+	private void setInterval(long interval) {
+		// interval is the estimated service time for a task in a server 
+		this.interval = (long) RandomNumberGenerator.getInstance(miu);
+		this.terminalTime = (long) (this.initialTime + this.interval);
 	}
-	public PopCustomerOut() {
+	public PopCustomerOut(long interval) {
 		this.type = "poping";
 		this.id = popCounter++;
-		this.timer = new Timer();
+		this.idInTaskList = this.idForTaskList++;
+		this.initialTime = StatisticalClock.CLOCK();
+		this.setInterval(interval);
+		timer = new Timer();
+		timer.schedule(new LocalClock(), interval);
 	}
-	private class ServiceTimeTask extends TimerTask {
-
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
+	
 	@Override
 	public boolean hasChanged() {
 		// TODO Auto-generated method stub
@@ -50,22 +57,12 @@ public class PopCustomerOut extends Task implements Observed {
 		
 	}
 	@Override
-	public void notifyController(Task e) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void setPopedCustomerID(int id) {
-		this.idOfCusBeingPoped = id;
+	public void notifyController() {
+		controller.notified(this);
 	}
 	
 	public int getPopedCustomerID() {
-		return this.idOfCusBeingPoped;
+		return this.targetCustID;
 	}
 	
 	public void markTargetID(int id) {
@@ -74,6 +71,21 @@ public class PopCustomerOut extends Task implements Observed {
 	
 	public int getTargetID() {
 		return this.targetCustID;
+	}
+	
+	public int getIdInTaskList() {
+		return this.idInTaskList;
+	}
+	
+	private class LocalClock extends TimerTask {
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			// Once reaches the termination time, notify the controller by returning itself
+			notifyController();
+		}
+		
 	}
 
 }

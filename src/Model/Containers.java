@@ -13,11 +13,11 @@ import java.util.*;
  * those instances mentioned previously.
  */
 public abstract class Containers {
-	protected Collection<Task> container;
+	protected Collection container;
 	protected String type;
 	protected int ID;
 	
-	public abstract void takeTaskIn(Task e);
+	public abstract boolean takeTaskIn(Task e);
 	public abstract Task popTaskOut();
 	public int getState() {
 		return container.size();

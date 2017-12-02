@@ -21,8 +21,8 @@ public class TaskList extends Containers {
 			@Override
 			public int compare(Task eOne, Task eTwo) {
 				// TODO Auto-generated method stub
-				double a = eOne.getInterval();
-				double b = eTwo.getInterval();
+				double a = eOne.getTerminalTime();
+				double b = eTwo.getTerminalTime();
 				if (a < b) {
 					return -1;
 				} else if (a > b) {
@@ -44,9 +44,9 @@ public class TaskList extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public synchronized void takeTaskIn(Task e) {
+	public synchronized boolean takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
-		Tasklist.offer(e);
+		return Tasklist.offer(e);
 
 	}
 

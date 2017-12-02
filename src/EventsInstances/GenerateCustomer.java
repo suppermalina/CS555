@@ -18,19 +18,35 @@ import Model.Task;
  *
  */
 public class GenerateCustomer extends Task implements Observed {
-	private double duration;
-	private double lambda;
+	
+	
+	// This is used to mark this object is the ith specific task being generated
 	private static int generateCustomerID = 1;
-	private Timer timer;
+	
+	// idInTaskList is used to find this task object in task list. It will be
+	// stored as the key value into a hash-map with the object as the value 
+	private int idInTaskList;
+	
+	// Supposed to have a controller, but not sure. May be it will be removed later
 	private Controller controller;
-	private void setInterval() {
-		this.interval = RandomNumberGenerator.getInstance(lambda);
+	
+	private Timer timer;
+	
+	public void setInterval(long interval) {
+		// interval is the estimated interval between a new generated task and the next 
+		// task which supposed to be generated
+		this.interval = interval;
+		this.terminalTime = (long) (this.interval + this.initialTime);
 	}
 	
-	public GenerateCustomer() {
+	public GenerateCustomer(long interval) {
+		this.initialTime = StatisticalClock.CLOCK();
 		this.type = "generating";
 		this.id = generateCustomerID++;
-		this.timer = new Timer();
+		this.idInTaskList = this.idForTaskList++;
+		this.setInterval(interval);
+		timer = new Timer();
+		timer.schedule(new LocalClock(), interval);
 	}
 
 	@Override
@@ -46,14 +62,23 @@ public class GenerateCustomer extends Task implements Observed {
 	}
 
 	@Override
-	public void notifyController(Task e) {
+	public void notifyController() {
 		// TODO Auto-generated method stub
-		controller.notified(e);
+		controller.notified(this);
 	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
+	
+	public int getIdInTaskList() {
+		return this.idInTaskList;
+	}
+	
+	private class LocalClock extends TimerTask {
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			// Once reaches the termination time, notify the controller by returning itself
+			notifyController();
+		}
 		
 	}
 

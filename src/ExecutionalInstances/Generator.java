@@ -26,15 +26,17 @@ import Model.Task;
  *
  */
 public final class Generator {
+	public static long intervalForGenerating;
+	public static long intervalForPoping;
 	public final static Generator FACTORY = new Generator();
 	public static Task getTask(String type) {
 		// TODO Auto-generated method stub
 		if (type.equalsIgnoreCase("customer")) {
 			return new Customer();
 		} else if (type.equalsIgnoreCase("generating")) {
-			return new GenerateCustomer();
+			return new GenerateCustomer(intervalForGenerating);
 		} else if (type.equalsIgnoreCase("poping")) {
-			return new PopCustomerOut();
+			return new PopCustomerOut(intervalForPoping);
 		} else {
 			System.exit(-1);
 			new Exception("Illegal type!!!");

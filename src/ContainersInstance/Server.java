@@ -5,6 +5,11 @@ package ContainersInstance;
 
 import java.util.*;
 
+import EventsInstances.Customer;
+import EventsInstances.PopCustomerOut;
+import ExecutionalInstances.Controller;
+import ExecutionalInstances.Generator;
+import ExecutionalInstances.RandomNumberGenerator;
 import Model.Containers;
 import Model.Task;
 
@@ -13,13 +18,13 @@ import Model.Task;
  *
  */
 public class Server extends Containers {
-
+	private int custID;
+	private long delay;
 	private static Integer serverID = 1;
 	private List<Task> server = new ArrayList<Task>(container);
 	private double miu;
 	
 	public Server() {
-		this.container = new LinkedList<Task>();
 		this.type = "SERVER";
 		this.ID = serverID++;
 	}
@@ -36,9 +41,16 @@ public class Server extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public synchronized void takeTaskIn(Task e) {
+	public synchronized boolean takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
-		server.add(e);
+		Customer temp = (Customer)e;
+		delay = (long) RandomNumberGenerator.getInstance(miu);
+		Generator.intervalForPoping = delay;
+		PopCustomerOut tempPop = (PopCustomerOut) Generator.FACTORY.getTask("poping");
+		tempPop.markTargetID(temp.getId());
+		Controller.tasks.takeTaskIn(tempPop);
+		return server.add(e);
+		
 	}
 
 	/* 

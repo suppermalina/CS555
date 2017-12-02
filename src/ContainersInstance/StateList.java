@@ -6,6 +6,7 @@ package ContainersInstance;
 import java.util.*;
 
 import Model.Containers;
+import Model.SystemState;
 import Model.Task;
 /**
  * @author mali
@@ -14,7 +15,6 @@ import Model.Task;
 public class StateList extends Containers {
 	private static int stateListID = 1;
 	public StateList() {
-		this.container = new ArrayList<Task>();
 		this.type = "STATELIST";
 		this.ID = stateListID++;
 	}
@@ -23,14 +23,14 @@ public class StateList extends Containers {
 		return statelist.isEmpty();
 	}
 
-	private Deque<Task> statelist = new LinkedList<Task>(container);
+	public Deque<SystemState> statelist = new LinkedList<SystemState>();
 	/* (non-Javadoc)
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public synchronized void takeTaskIn(Task e) {
+	public synchronized boolean takeTaskIn(Task t) {
 		// TODO Auto-generated method stub
-		statelist.offerLast(e);
+		return false;
 	}
 
 	/* (non-Javadoc)
@@ -39,7 +39,22 @@ public class StateList extends Containers {
 	@Override
 	public synchronized Task popTaskOut() {
 		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public synchronized SystemState popStateOut() {
+		// TODO Auto-generated method stub
 		return statelist.pollFirst();
 	}
+	
+	private class State {
+		
+	}
+
+	public void takeStateIn(SystemState state) {
+		// TODO Auto-generated method stub
+		statelist.offerLast(state);
+	}
+
 
 }

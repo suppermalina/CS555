@@ -16,7 +16,6 @@ public class Queueing extends Containers {
 	private Deque<Task> queue = new LinkedList<Task>(container);
 	private static int queueID = 1;
 	public Queueing() {
-		this.container = new LinkedList<Task>();
 		this.type = "QUEUE";
 		this.ID = queueID++;
 	}
@@ -25,10 +24,9 @@ public class Queueing extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public
-	synchronized void takeTaskIn(Task e) {
+	public synchronized boolean takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
-		queue.offerLast(e);
+		return queue.offerLast(e);
 	}
 
 	/* (non-Javadoc)

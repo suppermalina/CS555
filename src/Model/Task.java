@@ -13,12 +13,14 @@ import ExecutionalInstances.Controller;
  * @author mali
  *
  */
-public abstract class Task extends TimerTask {
+public abstract class Task {
+	// This variable is set for those tasks will be send to the tasklist
+	protected static int idForTaskList = 1;
 	protected int id;
 	protected String type;
 	protected long initialTime;
 	protected long terminalTime;
-	protected double interval;
+	protected long interval;
 
 	public int getId() {
 		return id;

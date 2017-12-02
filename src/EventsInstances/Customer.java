@@ -14,7 +14,6 @@ import Model.*;
 public class Customer extends Task {
 	private boolean flag;
 	private static int customerID = 1;
-	private double timeBeingPoped;
 	private double enterServer;
 	/**
 	 * @param type
@@ -43,22 +42,13 @@ public class Customer extends Task {
 		return this.type + this.id;
 	}
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	public double timeInServer() {
 		if (flag) {
-			return this.timeBeingPoped - this.initialTime;
+			return this.terminalTime - this.enterServer;
 		} else {
 			return 0.0;
 		}
-	}
-	
-	public void popedTime() {
-		this.timeBeingPoped = StatisticalClock.CLOCK();
 	}
 	
 	public double timeInQueue() {
@@ -69,7 +59,7 @@ public class Customer extends Task {
 		}
 	}
 	
-	public void setTimeInServer() {
+	public void setTimeEnteringServer() {
 		this.enterServer = StatisticalClock.CLOCK();
 	}
 

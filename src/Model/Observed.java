@@ -15,5 +15,5 @@ import ExecutionalInstances.Controller;
 public interface Observed {
 	abstract boolean hasChanged();
 	abstract void addController(Controller o);
-	abstract void notifyController(Task e);
+	abstract void notifyController();
 }

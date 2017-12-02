@@ -15,27 +15,28 @@ import Model.Task;
  * @author mali
  *
  */
-public class Simulator {
-	private int numberOfServer;
-	private int numberOfQueue;
-	
-	// In our project they they are 1
-	// Maybe in the future they will be changed into some larger numbers
-	// for simulating a more complicated system
-	private int numberOfTasktList;
-	private int numberOfStateList;
+public final class Simulator {
+	private int numberOfServer = 2;
+	private int numberOfQueue = 1;
 	
 	// This is for future development. I want to learn the situation that each server
-	// has its own queue
-	private PriorityQueue<Queueing> queues;
-	private PriorityQueue<Server> servers;
-	private StateList log;
+	// has its own queue.
+	// The container with the smallest size should always on the top
+	private static PriorityQueue<Queueing> queues;
+	private static PriorityQueue<Server> servers;
+	
+	// log records each action happens in the simulator
+	
 	private Comparator<Containers> myComparator;
-	private Map<Integer, Containers> customerFinder;
+	
+	// If a system has multiple servers and multiple queues, and they are not combined
+	// then we will need this to find the location of a specific customer
+	private static Map<Integer, Containers> customerFinder;
+	private static StatisticalCounter counter;
 	
 	// Only one controller is allowed
 	private void setUp() {
-		StateList log = (StateList) Generator.FACTORY.getContainer("statelist");
+		customerFinder = new HashMap<Integer, Containers>();
 		queues = new PriorityQueue<Queueing>(10, new MyComparator());
 		servers = new PriorityQueue<Server>(10, new MyComparator());
 		while (numberOfServer > 0) {
@@ -46,10 +47,22 @@ public class Simulator {
 		while (numberOfQueue > 0) {
 			int counter = 1;
 			queues.offer((Queueing)Generator.FACTORY.getContainer("queue"));
+			numberOfQueue--;
 		}
+		counter = (StatisticalCounter)Generator.FACTORY.getContainer("counter");
 	}
 	
-	protected void generateNewCustomer(Task t) {
+	public static int currentState() {
+		Set<Map.Entry<Integer, Containers>> containers = customerFinder.entrySet();
+		int size = 0;
+		for (Map.Entry<Integer, Containers> container : containers) {
+			size += container.getValue().getSize();
+		}
+		return size;
+			
+	}
+	
+	public static void generateNewCustomer(Task t) {
 		int index = 0;
 		Customer newCust = null;
 		Queueing tempQue = null;
@@ -65,7 +78,7 @@ public class Simulator {
 		if (tempQue.isIdle()) {
 			if (tempServer.isIdle()) {
 				tempServer.takeTaskIn(newCust);
-				newCust.setTimeInServer();
+				newCust.setTimeEnteringServer();
 				customerFinder.put(newCust.getId(), tempServer);
 			} else {
 				tempQue.takeTaskIn(newCust);
@@ -83,7 +96,7 @@ public class Simulator {
 		}
 		
 		if (newCust != null) {
-			log.takeTaskIn(newCust);
+			counter.takeTaskIn(newCust);
 		}
 	}
 	
@@ -101,7 +114,7 @@ public class Simulator {
 				} else {
 					tempServer = servers.peek();
 					targetCustomer = (Customer) tempQue.popTaskOut();
-					targetCustomer.setTimeInServer();
+					targetCustomer.setTimeEnteringServer();
 					tempServer.takeTaskIn(targetCustomer);
 				}
 			} else {
@@ -112,7 +125,6 @@ public class Simulator {
 				} else {
 					targetCustomer = (Customer)tempServer.popTaskOut();
 					targetCustomer.setTerminalTime();
-					log.takeTaskIn(targetCustomer);
 				}
 			}
 		}
@@ -131,8 +143,6 @@ public class Simulator {
 				return -1;
 			} else return 1;
 		}
-
-		
 	}
 
 }
