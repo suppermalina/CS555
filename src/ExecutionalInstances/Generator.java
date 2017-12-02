@@ -20,7 +20,7 @@ import EventsInstances.GenerateCustomer;
 import EventsInstances.PopCustomerOut;
 import Model.BaseGenerator;
 import Model.Containers;
-import Model.Event;
+import Model.Task;
 
 /**
  * @author mali
@@ -32,7 +32,7 @@ public class Generator implements BaseGenerator {
 	 * @see Model.BaseGenerator#getEvent(int, java.lang.String)
 	 */
 	@Override
-	public Event getEvent(String type) {
+	public Task getTask(String type) {
 		// TODO Auto-generated method stub
 		if (type.equalsIgnoreCase("customer")) {
 			return new Customer();

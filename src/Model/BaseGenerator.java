@@ -10,6 +10,6 @@ import java.util.*;
  * This is the abstract factory for gener
  */
 public interface BaseGenerator {
-	abstract Event getEvent(String type);
+	abstract Task getTask(String type);
 	abstract Containers getContainer(String type);
 }

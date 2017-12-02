@@ -3,6 +3,7 @@
  */
 package EventsInstances;
 
+import ExecutionalInstances.Coordinator;
 import ExecutionalInstances.StatisticalClock;
 import Model.*;
 
@@ -31,12 +32,19 @@ public class Customer extends Task {
 		this.terminalTime = StatisticalClock.CLOCK();
 	}
 	
+
 	public double timInSystem() {
 		return this.terminalTime - this.initialTime;
 	}
 	
 	public String toString() {
 		return this.type + this.id;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 
 
