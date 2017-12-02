@@ -26,7 +26,8 @@ public class StatisticalCounter extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	protected synchronized void takeTaskIn(Task e) {
+	public
+	synchronized void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
 		counter.offerLast(e);
 	}
@@ -35,12 +36,13 @@ public class StatisticalCounter extends Containers {
 	 * @see Model.Containers#popTaskOut()
 	 */
 	@Override
-	protected synchronized Task popTaskOut() {
+	public
+	synchronized Task popTaskOut() {
 		// TODO Auto-generated method stub
 		return counter.pollLast();
 	}
 	
-	protected synchronized boolean isEmpty() {
+	public synchronized boolean isEmpty() {
 		return counter.isEmpty();
 	}
 

@@ -6,7 +6,7 @@ package EventsInstances;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ExecutionalInstances.Coordinator;
+import ExecutionalInstances.Controller;
 import ExecutionalInstances.RandomNumberGenerator;
 import Model.Observed;
 import Model.Task;
@@ -16,9 +16,12 @@ import Model.Task;
  *
  */
 public class PopCustomerOut extends Task implements Observed {
+	private int targetCustID;
 	private static int popCounter = 1;
 	private double miu;
 	private Timer timer;
+	private Controller controller;
+	private int idOfCusBeingPoped;
 	private void setInterval() {
 		this.interval = RandomNumberGenerator.getInstance(miu);
 	}
@@ -42,12 +45,12 @@ public class PopCustomerOut extends Task implements Observed {
 		return false;
 	}
 	@Override
-	public void addCoordinator(Coordinator o) {
+	public void addController(Controller o) {
 		// TODO Auto-generated method stub
 		
 	}
 	@Override
-	public void notifyCoordinatro(Task e) {
+	public void notifyController(Task e) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -55,6 +58,22 @@ public class PopCustomerOut extends Task implements Observed {
 	public void run() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void setPopedCustomerID(int id) {
+		this.idOfCusBeingPoped = id;
+	}
+	
+	public int getPopedCustomerID() {
+		return this.idOfCusBeingPoped;
+	}
+	
+	public void markTargetID(int id) {
+		this.targetCustID = id;
+	}
+	
+	public int getTargetID() {
+		return this.targetCustID;
 	}
 
 }

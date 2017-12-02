@@ -6,7 +6,7 @@ package Model;
 import java.util.Set;
 import java.util.TimerTask;
 
-import ExecutionalInstances.Coordinator;
+import ExecutionalInstances.Controller;
 
 /**
  * @author mali
@@ -14,6 +14,6 @@ import ExecutionalInstances.Coordinator;
  */
 public interface Observed {
 	abstract boolean hasChanged();
-	abstract void addCoordinator(Coordinator o);
-	abstract void notifyCoordinatro(Task e);
+	abstract void addController(Controller o);
+	abstract void notifyController(Task e);
 }

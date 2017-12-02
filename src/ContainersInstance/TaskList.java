@@ -36,7 +36,7 @@ public class TaskList extends Containers {
 	}
 	private PriorityQueue<Task> Tasklist = new PriorityQueue<Task>(container);
 	
-	protected synchronized boolean isFull() {
+	public synchronized boolean isFull() {
 		return Tasklist.size() > 0;
 	}
 
@@ -44,7 +44,7 @@ public class TaskList extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	protected synchronized void takeTaskIn(Task e) {
+	public synchronized void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
 		Tasklist.offer(e);
 
@@ -54,7 +54,7 @@ public class TaskList extends Containers {
 	 * @see Model.Containers#popTaskOut()
 	 */
 	@Override
-	protected synchronized Task popTaskOut() {
+	public synchronized Task popTaskOut() {
 		// TODO Auto-generated method stub
 		return Tasklist.poll();
 	}

@@ -19,7 +19,7 @@ public class StateList extends Containers {
 		this.ID = stateListID++;
 	}
 	
-	protected synchronized boolean isEmpty() {
+	public synchronized boolean isEmpty() {
 		return statelist.isEmpty();
 	}
 
@@ -28,7 +28,7 @@ public class StateList extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	protected synchronized void takeTaskIn(Task e) {
+	public synchronized void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
 		statelist.offerLast(e);
 	}
@@ -37,7 +37,7 @@ public class StateList extends Containers {
 	 * @see Model.Containers#popTaskOut()
 	 */
 	@Override
-	protected synchronized Task popTaskOut() {
+	public synchronized Task popTaskOut() {
 		// TODO Auto-generated method stub
 		return statelist.pollFirst();
 	}

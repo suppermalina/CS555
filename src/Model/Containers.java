@@ -17,14 +17,18 @@ public abstract class Containers {
 	protected String type;
 	protected int ID;
 	
-	protected abstract void takeTaskIn(Task e);
-	protected abstract Task popTaskOut();
-	protected int getState() {
+	public abstract void takeTaskIn(Task e);
+	public abstract Task popTaskOut();
+	public int getState() {
 		return container.size();
 	}
 	
-	protected String getName() {
+	public String getName() {
 		return type + ID;
+	}
+	
+	public int getSize() {
+		return container.size();
 	}
 
 }

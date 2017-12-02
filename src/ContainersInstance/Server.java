@@ -36,7 +36,7 @@ public class Server extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	protected synchronized void takeTaskIn(Task e) {
+	public synchronized void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
 		server.add(e);
 	}
@@ -45,9 +45,13 @@ public class Server extends Containers {
 	 * @see Model.Containers#popTaskOut()
 	 */
 	@Override
-	protected synchronized Task popTaskOut() {
+	public synchronized Task popTaskOut() {
 		// TODO Auto-generated method stub
 		return server.get(0);
 	}
-
+	
+	public int firstCustID() {
+		return server.get(0).getId();
+	}
+	
 }

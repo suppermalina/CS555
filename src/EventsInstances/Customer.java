@@ -3,7 +3,7 @@
  */
 package EventsInstances;
 
-import ExecutionalInstances.Coordinator;
+import ExecutionalInstances.Controller;
 import ExecutionalInstances.StatisticalClock;
 import Model.*;
 
@@ -14,6 +14,8 @@ import Model.*;
 public class Customer extends Task {
 	private boolean flag;
 	private static int customerID = 1;
+	private double timeBeingPoped;
+	private double enterServer;
 	/**
 	 * @param type
 	 * @param id
@@ -45,6 +47,30 @@ public class Customer extends Task {
 	public void run() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public double timeInServer() {
+		if (flag) {
+			return this.timeBeingPoped - this.initialTime;
+		} else {
+			return 0.0;
+		}
+	}
+	
+	public void popedTime() {
+		this.timeBeingPoped = StatisticalClock.CLOCK();
+	}
+	
+	public double timeInQueue() {
+		if (flag) {
+			return this.enterServer - this.initialTime;
+		} else {
+			return 0.0;
+		}
+	}
+	
+	public void setTimeInServer() {
+		this.enterServer = StatisticalClock.CLOCK();
 	}
 
 

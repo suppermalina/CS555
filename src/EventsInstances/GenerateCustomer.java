@@ -7,7 +7,7 @@ import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ExecutionalInstances.Coordinator;
+import ExecutionalInstances.Controller;
 import ExecutionalInstances.RandomNumberGenerator;
 import ExecutionalInstances.StatisticalClock;
 import Model.Observed;
@@ -22,6 +22,7 @@ public class GenerateCustomer extends Task implements Observed {
 	private double lambda;
 	private static int generateCustomerID = 1;
 	private Timer timer;
+	private Controller controller;
 	private void setInterval() {
 		this.interval = RandomNumberGenerator.getInstance(lambda);
 	}
@@ -31,17 +32,6 @@ public class GenerateCustomer extends Task implements Observed {
 		this.id = generateCustomerID++;
 		this.timer = new Timer();
 	}
-	
-	
-	private class GenerateTimeTask extends TimerTask {
-
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
 
 	@Override
 	public boolean hasChanged() {
@@ -50,15 +40,15 @@ public class GenerateCustomer extends Task implements Observed {
 	}
 
 	@Override
-	public void addCoordinator(Coordinator o) {
+	public void addController(Controller o) {
 		// TODO Auto-generated method stub
-		
+		controller = Controller.getInstance();
 	}
 
 	@Override
-	public void notifyCoordinatro(Task e) {
+	public void notifyController(Task e) {
 		// TODO Auto-generated method stub
-		
+		controller.notified(e);
 	}
 
 	@Override
