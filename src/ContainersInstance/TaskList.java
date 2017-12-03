@@ -37,16 +37,21 @@ public class TaskList extends Containers {
 		System.out.println("TaskList is ready");
 	}
 	
+	public boolean isEmpty() {
+		return tasklist.isEmpty();
+	}
+	
 	public synchronized boolean isFull() {
 		return tasklist.size() > 0;
 	}
-
+	private int counter = 1;
 	/* (non-Javadoc)
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
 	public synchronized boolean takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
+		System.out.println("The " + counter++ + "th customer into tasklist");
 		return tasklist.offer(e);
 
 	}

@@ -11,8 +11,12 @@ import Model.SystemState;
 import Model.Task;
 
 public class Test {
-	public static void main(String[] args) {
-		Center c = Center.getInstance();
+	private Center c;
+	public void test() {
+		c = new Center();
 		c.start();
+	}
+	public static void main(String[] args) {
+		new Test().test();
 	}
 }

@@ -58,7 +58,8 @@ public class PopCustomerOut extends Task implements Observed {
 		
 	}
 	@Override
-	public void notifyController() {
+	public synchronized void notifyController() {
+		System.out.println("pop notify");
 		controller.notified(this);
 	}
 	

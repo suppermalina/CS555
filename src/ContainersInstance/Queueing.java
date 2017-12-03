@@ -19,6 +19,7 @@ public class Queueing extends Containers {
 	private boolean checkIdle;
 	private static int queueID = 1;
 	private Deque<Task> queue;
+	private static int counter = 0;
 	public Queueing() {
 		this.type = "QUEUE";
 		this.ID = queueID++;
@@ -32,6 +33,7 @@ public class Queueing extends Containers {
 	@Override
 	public synchronized boolean takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
+		System.out.println("The " + counter++ + "th customer in queue");
 		return queue.offerLast(e);
 	}
 

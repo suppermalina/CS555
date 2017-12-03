@@ -16,19 +16,18 @@ import Model.Task;
  *
  */
 public final class Simulator {
-	private static int numberOfServer = 2;
-	private static int numberOfQueue = 1;
+
 
 	// If a system has multiple servers and multiple queues, and they are not
 	// combined
 	// then we will need this to find the location of a specific customer
 	private static Map<Integer, Containers> customerFinder;
 	private static StatisticalCounter counter;
-	private static Server server;
+	private static Servers server;
 	private static Queueing queue;
 
 	private Simulator() {
-		server = (Server) Generator.getContainer("server");
+		server = new Servers();
 		queue = (Queueing) Generator.getContainer("queue");
 		counter = (StatisticalCounter) Generator.getContainer("counter");
 		System.out.println("Simulator ready");
@@ -44,7 +43,7 @@ public final class Simulator {
 		return queue.getSize() + server.getSize();
 	}
 
-	public synchronized static void generateNewCustomer(Task t) {
+	public synchronized static boolean generateNewCustomer(Task t) {
 		Customer newCust = null;
 		if (t == null) {
 			// System.out.println("generateNewCustomer recieves null");
@@ -54,30 +53,37 @@ public final class Simulator {
 		if (t != null) {
 			newCust = (Customer) Generator.getTask("customer");
 			sentToQueue(newCust);
+			return true;
 		} else {
 			System.exit(-1);
 			System.out.println("The task for generating new customer is NULL!!!");
 		}
+		return false;
 	}
 
 	private synchronized static void sentToQueue(Customer c) {
 		Customer newCust = c;
 		if (queue.isIdle()) {
 			if (!server.allFull()) {
+				newCust.setFlag();
 				System.out.println("DIRECT SERVICE!!!");
-				server.takeTaskIn(newCust);
+				server.enterServers(newCust);
 			} else {
 				System.out.println("Waiting in the Queue, FIRST!!!");
 				queue.takeTaskIn(newCust);
 			}
 			newCust = null;
 		} else {
+			System.out.println("queue is not idle");
+			System.out.println(server.getSize());
 			if (!queue.isFull()) {
 				newCust.setFlag();
 				System.out.println("Waiting in the Queue, SOMEWHERE!!!");
 				queue.takeTaskIn(newCust);
 				newCust = null;
 			}
+			System.out.println(queue.getSize());
+			System.out.println("servers are all full!!!");
 		}
 		if (newCust != null) {
 			counter.takeTaskIn(newCust);
@@ -87,13 +93,13 @@ public final class Simulator {
 
 	protected synchronized void popCustomer(PopCustomerOut p) {
 		if (p != null) {
-			server.findCustomer(p.getPopedCustomerID());
+			server.popCust(p.getPopedCustomerID());
 		} else {
 			System.exit(-1);
 			System.out.println("How can a poping task be null");
 		}
 		if (!queue.isFull()) {
-			server.takeTaskIn(queue.popTaskOut());
+			server.enterServers(queue.popTaskOut());
 		}
 	}
 
