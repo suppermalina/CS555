@@ -18,6 +18,7 @@ public class StatisticalCounter extends Containers {
 		this.container = new ArrayList<Task>();
 		this.type = "COUNTER";
 		this.ID = counterID++;
+		System.out.println("Counter is ready");
 	}
 
 	private Deque<Task> counter = new LinkedList<Task>()	;
@@ -26,8 +27,7 @@ public class StatisticalCounter extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public
-	synchronized boolean takeTaskIn(Task e) {
+	public synchronized boolean takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
 		return counter.offerLast(e);
 	}
@@ -44,6 +44,12 @@ public class StatisticalCounter extends Containers {
 	
 	public synchronized boolean isEmpty() {
 		return counter.isEmpty();
+	}
+
+	@Override
+	public int getSize() {
+		// TODO Auto-generated method stub
+		return counter.size();
 	}
 
 }

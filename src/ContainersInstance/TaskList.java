@@ -15,8 +15,9 @@ import Model.Task;
  */
 public class TaskList extends Containers {
 	private static int taskListID = 1;
+	private PriorityQueue<Task> tasklist;
 	public TaskList() {
-		this.container = new PriorityQueue<Task>(10, new Comparator<Task>() {
+		this.tasklist = new PriorityQueue<Task>(10, new Comparator<Task>() {
 
 			@Override
 			public int compare(Task eOne, Task eTwo) {
@@ -33,11 +34,11 @@ public class TaskList extends Containers {
 		});
 		this.type = "TASKLIST";
 		this.ID = taskListID++;
+		System.out.println("TaskList is ready");
 	}
-	private PriorityQueue<Task> Tasklist = new PriorityQueue<Task>(container);
 	
 	public synchronized boolean isFull() {
-		return Tasklist.size() > 0;
+		return tasklist.size() > 0;
 	}
 
 	/* (non-Javadoc)
@@ -46,7 +47,7 @@ public class TaskList extends Containers {
 	@Override
 	public synchronized boolean takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
-		return Tasklist.offer(e);
+		return tasklist.offer(e);
 
 	}
 
@@ -56,7 +57,13 @@ public class TaskList extends Containers {
 	@Override
 	public synchronized Task popTaskOut() {
 		// TODO Auto-generated method stub
-		return Tasklist.poll();
+		return tasklist.poll();
+	}
+
+	@Override
+	public int getSize() {
+		// TODO Auto-generated method stub
+		return tasklist.size();
 	}
 
 }

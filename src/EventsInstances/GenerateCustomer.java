@@ -7,7 +7,7 @@ import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ExecutionalInstances.Controller;
+import ExecutionalInstances.Center;
 import ExecutionalInstances.RandomNumberGenerator;
 import ExecutionalInstances.StatisticalClock;
 import Model.Observed;
@@ -28,11 +28,11 @@ public class GenerateCustomer extends Task implements Observed {
 	private int idInTaskList;
 	
 	// Supposed to have a controller, but not sure. May be it will be removed later
-	private Controller controller;
+	private Center controller;
 	
 	private Timer timer;
 	
-	public void setInterval(long interval) {
+	public synchronized void setInterval(long interval) {
 		// interval is the estimated interval between a new generated task and the next 
 		// task which supposed to be generated
 		this.interval = interval;
@@ -40,6 +40,7 @@ public class GenerateCustomer extends Task implements Observed {
 	}
 	
 	public GenerateCustomer(long interval) {
+		controller = Center.getInstance();
 		this.initialTime = StatisticalClock.CLOCK();
 		this.type = "generating";
 		this.id = generateCustomerID++;
@@ -56,27 +57,28 @@ public class GenerateCustomer extends Task implements Observed {
 	}
 
 	@Override
-	public void addController(Controller o) {
+	public synchronized void addController(Center o) {
 		// TODO Auto-generated method stub
-		controller = Controller.getInstance();
 	}
 
 	@Override
-	public void notifyController() {
+	public synchronized void notifyController() {
 		// TODO Auto-generated method stub
+		System.out.println("Ok, the " + testCounter + " times notify");
 		controller.notified(this);
 	}
 	
 	public int getIdInTaskList() {
 		return this.idInTaskList;
 	}
-	
+	public static int testCounter = 1;
 	private class LocalClock extends TimerTask {
 		
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			// Once reaches the termination time, notify the controller by returning itself
+			System.out.println("Test localclock " + testCounter++);
 			notifyController();
 		}
 		

@@ -17,6 +17,7 @@ public class StateList extends Containers {
 	public StateList() {
 		this.type = "STATELIST";
 		this.ID = stateListID++;
+		System.out.println("StateList is ready");
 	}
 	
 	public synchronized boolean isEmpty() {
@@ -46,14 +47,16 @@ public class StateList extends Containers {
 		// TODO Auto-generated method stub
 		return statelist.pollFirst();
 	}
-	
-	private class State {
-		
-	}
 
 	public void takeStateIn(SystemState state) {
 		// TODO Auto-generated method stub
 		statelist.offerLast(state);
+	}
+
+	@Override
+	public int getSize() {
+		// TODO Auto-generated method stub
+		return statelist.size();
 	}
 
 

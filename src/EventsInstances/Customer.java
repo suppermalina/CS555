@@ -3,7 +3,6 @@
  */
 package EventsInstances;
 
-import ExecutionalInstances.Controller;
 import ExecutionalInstances.StatisticalClock;
 import Model.*;
 

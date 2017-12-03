@@ -6,7 +6,7 @@ package EventsInstances;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ExecutionalInstances.Controller;
+import ExecutionalInstances.Center;
 import ExecutionalInstances.RandomNumberGenerator;
 import ExecutionalInstances.StatisticalClock;
 import Model.Observed;
@@ -30,13 +30,14 @@ public class PopCustomerOut extends Task implements Observed {
 	private double miu;
 	private Timer timer;
 	// Supposed to have a controller, but not sure. May be it will be removed later
-	private Controller controller;
+	private Center controller;
 	private void setInterval(long interval) {
 		// interval is the estimated service time for a task in a server 
 		this.interval = (long) RandomNumberGenerator.getInstance(miu);
 		this.terminalTime = (long) (this.initialTime + this.interval);
 	}
 	public PopCustomerOut(long interval) {
+		controller = Center.getInstance();
 		this.type = "poping";
 		this.id = popCounter++;
 		this.idInTaskList = this.idForTaskList++;
@@ -52,7 +53,7 @@ public class PopCustomerOut extends Task implements Observed {
 		return false;
 	}
 	@Override
-	public void addController(Controller o) {
+	public void addController(Center o) {
 		// TODO Auto-generated method stub
 		
 	}

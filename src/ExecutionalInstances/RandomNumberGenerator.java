@@ -13,10 +13,10 @@ public final class RandomNumberGenerator {
     }
     
     public synchronized static double getInstance(double avgRate) {
-    	double seed = Math.random();
+    	double seed = Math.random() * 10;
 		ENGINE.eval("set.seed(" + seed + ")");
 		double base = ENGINE.eval("runif(1)").asDouble();
-		double result = -avgRate * Math.exp(base);
+		double result = -avgRate * Math.log(base);
 	    return result;
     }
 }

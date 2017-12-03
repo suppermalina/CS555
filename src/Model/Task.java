@@ -7,7 +7,6 @@ import java.util.Observable;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ExecutionalInstances.Controller;
 
 /**
  * @author mali

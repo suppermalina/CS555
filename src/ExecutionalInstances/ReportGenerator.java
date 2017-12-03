@@ -10,9 +10,5 @@ import ContainersInstance.StateList;
  *
  */
 public class ReportGenerator {
-	private StateList statelist;
-	protected void setList(StateList list) {
-		this.statelist = list;
-	}
 
 }

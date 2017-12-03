@@ -1,5 +1,7 @@
 import java.util.TimerTask;
 
+import ExecutionalInstances.StatisticalClock;
+
 /**
  * 
  */
@@ -17,7 +19,7 @@ public class TestTimerTask extends TimerTask {
 	public void run() {
 		// TODO Auto-generated method stub
 		System.out.println("It's your term!");
-		System.out.println(System.currentTimeMillis());
+		System.out.println(StatisticalClock.CLOCK() / 1000.0);
 	}
 
 }

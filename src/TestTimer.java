@@ -1,6 +1,9 @@
 import java.util.Timer;
 import java.util.TimerTask;
 
+import ExecutionalInstances.RandomNumberGenerator;
+import ExecutionalInstances.StatisticalClock;
+
 /**
  * 
  */
@@ -12,15 +15,16 @@ import java.util.TimerTask;
 public class TestTimer {
 	private Timer timer;
 	private TimerTask task;
-	private long delay = 5000;
+	private long delay = (long) (RandomNumberGenerator.getInstance(0.5) * 1000);
 	
 	private void makePlan() {
 		timer = new Timer();
 		task = new TestTimerTask();
 		
 		try {
-			System.out.println(System.currentTimeMillis());
-			timer.schedule(task, delay );
+			System.out.println("Delay is " + delay);
+			System.out.println(StatisticalClock.CLOCK());
+			timer.schedule(task, delay);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

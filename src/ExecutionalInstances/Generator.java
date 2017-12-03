@@ -28,7 +28,6 @@ import Model.Task;
 public final class Generator {
 	public static long intervalForGenerating;
 	public static long intervalForPoping;
-	public final static Generator FACTORY = new Generator();
 	public static Task getTask(String type) {
 		// TODO Auto-generated method stub
 		if (type.equalsIgnoreCase("customer")) {
@@ -47,12 +46,12 @@ public final class Generator {
 	public static Containers getContainer(String type) {
 		// TODO Auto-generated method stub
 		if (type.equalsIgnoreCase("server")) {
-			return new Server();
+			return new Server(2);
 		} else if (type.equalsIgnoreCase("queue")) {
 			return new Queueing();
 		} else if (type.equalsIgnoreCase("statelist")) {
 			return new StateList();
-		} else if (type.equalsIgnoreCase("eventlist")) {
+		} else if (type.equalsIgnoreCase("tasklist")) {
 			return new TaskList();
 		} else if (type.equalsIgnoreCase("counter")) {
 			return new StatisticalCounter();

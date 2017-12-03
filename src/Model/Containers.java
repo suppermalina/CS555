@@ -27,8 +27,6 @@ public abstract class Containers {
 		return type + ID;
 	}
 	
-	public int getSize() {
-		return container.size();
-	}
+	public abstract int getSize();
 
 }

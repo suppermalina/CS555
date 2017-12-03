@@ -4,7 +4,9 @@
 package ContainersInstance;
 
 import java.util.*;
+import java.util.Map.Entry;
 
+import EventsInstances.Customer;
 import Model.Containers;
 import Model.Task;
 
@@ -13,11 +15,15 @@ import Model.Task;
  *
  */
 public class Queueing extends Containers {
-	private Deque<Task> queue = new LinkedList<Task>(container);
+	private final int capacity = 5;
+	private boolean checkIdle;
 	private static int queueID = 1;
+	private Deque<Task> queue;
 	public Queueing() {
 		this.type = "QUEUE";
 		this.ID = queueID++;
+		queue = new LinkedList<Task>();
+		System.out.println("Queue is ready");
 	}
 
 	/* (non-Javadoc)
@@ -39,7 +45,7 @@ public class Queueing extends Containers {
 	}
 	
 	public synchronized boolean isIdle() {
-		return queue.isEmpty();
+		return queue.size() == 0;
 	}
 	
 	public synchronized boolean isFull() {
@@ -48,6 +54,12 @@ public class Queueing extends Containers {
 	
 	public synchronized int firstCustID() {
 		return queue.peek().getId();
+	}
+
+	@Override
+	public int getSize() {
+		// TODO Auto-generated method stub
+		return queue.size();
 	}
 
 }
