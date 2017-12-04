@@ -27,6 +27,10 @@ public abstract class Containers {
 		return type + ID;
 	}
 	
+	public String toString() {
+		return type + ID;
+	}
+	
 	public abstract int getSize();
 
 }

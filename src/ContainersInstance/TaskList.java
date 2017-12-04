@@ -5,6 +5,10 @@ package ContainersInstance;
 
 import java.util.*;
 
+import EventsInstances.GenerateCustomer;
+import EventsInstances.PopCustomerOut;
+import ExecutionalInstances.Controller;
+import ExecutionalInstances.StatisticalClock;
 import Model.Containers;
 import Model.Task;
 import Model.Task;
@@ -22,8 +26,8 @@ public class TaskList extends Containers {
 			@Override
 			public int compare(Task eOne, Task eTwo) {
 				// TODO Auto-generated method stub
-				double a = eOne.getTerminalTime();
-				double b = eTwo.getTerminalTime();
+				long a = eOne.getTerminalTime();
+				long b = eTwo.getTerminalTime();
 				if (a < b) {
 					return -1;
 				} else if (a > b) {
@@ -37,11 +41,15 @@ public class TaskList extends Containers {
 		System.out.println("TaskList is ready");
 	}
 	
+	public Task peek() {
+		return tasklist.peek();
+	}
+	
 	public boolean isEmpty() {
 		return tasklist.isEmpty();
 	}
 	
-	public synchronized boolean isFull() {
+	public boolean isFull() {
 		return tasklist.size() > 0;
 	}
 	private int counter = 1;
@@ -49,26 +57,42 @@ public class TaskList extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public synchronized boolean takeTaskIn(Task e) {
+	public  boolean takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
-		System.out.println("The " + counter++ + "th customer into tasklist");
+		System.out.println("The " + counter++ + "th " + e.getTyp() + " task into tasklist");
 		return tasklist.offer(e);
 
 	}
 
-	/* (non-Javadoc)
-	 * @see Model.Containers#popTaskOut()
-	 */
-	@Override
-	public synchronized Task popTaskOut() {
+	public boolean popTaskOut(Task t) {
 		// TODO Auto-generated method stub
-		return tasklist.poll();
+		if (!tasklist.isEmpty() && tasklist.peek().equals(t)) {
+			Controller.writeLog(t.toString() + " is removed from tasklist at " + StatisticalClock.CLOCK());
+			Controller.localLogRecorder.offerLast(tasklist.poll());
+			return true;
+		} else {
+			Controller.writeLog(t.toString() + " is the task need to be removed");
+			Controller.writeLog(t.getTimeInform());
+			Controller.writeLog(tasklist.peek().toString() + " is the one on the top");
+			Controller.writeLog(tasklist.peek().getTimeInform());
+			if (tasklist.peek().getTerminalTime() < t.getTerminalTime()) {
+				Controller.writeLog(tasklist.peek().toString() + " is going to be deleted by cheating");
+				tasklist.poll().getLocalTask().cancel();
+			}
+			return true;
+		}
 	}
 
 	@Override
-	public int getSize() {
+	public synchronized int getSize() {
 		// TODO Auto-generated method stub
 		return tasklist.size();
+	}
+
+	@Override
+	public Task popTaskOut() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

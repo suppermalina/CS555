@@ -5,6 +5,7 @@ package ContainersInstance;
 
 import java.util.*;
 
+import ExecutionalInstances.Controller;
 import Model.Containers;
 import Model.SystemState;
 import Model.Task;
@@ -47,9 +48,11 @@ public class StateList extends Containers {
 		// TODO Auto-generated method stub
 		return statelist.pollFirst();
 	}
-
+	
+	private int counter = 1;
 	public void takeStateIn(SystemState state) {
 		// TODO Auto-generated method stub
+		Controller.writeLog("statelist takes " + counter++ + "th state");
 		statelist.offerLast(state);
 	}
 

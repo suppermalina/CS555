@@ -7,9 +7,10 @@ import java.util.*;
 
 import EventsInstances.Customer;
 import EventsInstances.PopCustomerOut;
-import ExecutionalInstances.Center;
+import ExecutionalInstances.Controller;
 import ExecutionalInstances.Generator;
 import ExecutionalInstances.RandomNumberGenerator;
+import ExecutionalInstances.StatisticalClock;
 import Model.Containers;
 import Model.Task;
 
@@ -22,6 +23,8 @@ public class Server extends Containers {
 	private boolean isIdle;
 	private boolean isFull;
 	private int custID;
+	
+	// delay here is used to record the estimated service time
 	private long delay;
 	private static Integer serverID = 1;
 	private List<Task> server; 
@@ -51,14 +54,25 @@ public class Server extends Containers {
 	 */
 	@Override
 	public synchronized boolean takeTaskIn(Task e) {
-		// TODO Auto-generated method stub
-		Customer temp = (Customer)e;
-		delay = (long) (RandomNumberGenerator.getInstance(miu) * 1000);
-		Generator.intervalForPoping = delay;
-		PopCustomerOut tempPop = (PopCustomerOut) Generator.getTask("poping");
-		tempPop.markTargetID(temp.getId());
-		Center.tasks.takeTaskIn(tempPop);
-		return server.add(e);
+		if (server.size() == 0) {
+			// TODO Auto-generated method stub
+			Customer temp = (Customer)e;
+			Controller.writeLog(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+			
+			// Once a customer was accepted by any one of the servers, then a poping signal
+			// task should be generated immediately
+			delay = (long) (RandomNumberGenerator.getInstance(miu) * 1000);
+			Generator.intervalForPoping = delay;
+			PopCustomerOut tempPop = (PopCustomerOut) Generator.getTask("poping");
+			tempPop.markTargetID(temp.getId());
+			
+			Controller.writeLog(tempPop.toString() + " is generated for " + e.toString() + " at: " + StatisticalClock.CLOCK());
+			Controller.writeLog(tempPop.toString() + " interval time is: " + tempPop.getTimeInform());
+			// The task should be sent to the tasklist
+			Controller.tasks.takeTaskIn(tempPop);
+			return server.add(e);
+		} 
+		return false;
 	}
 	
 	/* 
@@ -70,7 +84,7 @@ public class Server extends Containers {
 		return server.get(0);
 	}
 	
-	public synchronized boolean compare(int id) {
+	public synchronized boolean findCustomer(int id) {
 		if (isFull()) {
 			return server.get(0).getId() == id;
 		} else {

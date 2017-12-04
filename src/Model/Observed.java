@@ -6,7 +6,7 @@ package Model;
 import java.util.Set;
 import java.util.TimerTask;
 
-import ExecutionalInstances.Center;
+import ExecutionalInstances.Controller;
 
 /**
  * @author mali
@@ -14,6 +14,6 @@ import ExecutionalInstances.Center;
  */
 public interface Observed {
 	abstract boolean hasChanged();
-	abstract void addController(Center o);
+	abstract void addController(Controller o);
 	abstract void notifyController();
 }

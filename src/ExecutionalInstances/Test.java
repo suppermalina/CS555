@@ -11,12 +11,14 @@ import Model.SystemState;
 import Model.Task;
 
 public class Test {
-	private Center c;
-	public void test() {
-		c = new Center();
-		c.start();
-	}
+	public static long averageSignalInitiatingTime;
+	private static Controller controller;
+
 	public static void main(String[] args) {
-		new Test().test();
+		controller = Controller.getInstance();
+		controller.start();
+		controller.exportLog();
+	
+		
 	}
 }

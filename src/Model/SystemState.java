@@ -23,5 +23,9 @@ public class SystemState {
 	public long getTime() {
 		return time;
 	}
+	
+	public String toString() {
+		return "System has " + state + " customers at: " + time / 1000.0;
+	}
 
 }
