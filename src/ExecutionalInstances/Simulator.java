@@ -31,7 +31,6 @@ public class Simulator {
 	// If a system has multiple servers and multiple queues, and they are not
 	// combined
 	// then we will need this to find the location of a specific customer
-	private StatisticalCounter counter;
 	private Servers server;
 	private Queueing queue;
 	
@@ -43,9 +42,8 @@ public class Simulator {
 
 	protected void setUp() {
 		
-		server = new Servers();
-		queue = (Queueing) Generator.getContainer("queue");
-		counter = (StatisticalCounter) Generator.getContainer("counter");
+		server = Servers.getInstance();
+		queue = Queueing.getInstance();
 		
 	}
 
@@ -58,7 +56,7 @@ public class Simulator {
 		return instance;
 	}
 
-	public synchronized int currentState() {
+	public int currentState() {
 		return queue.getSize() + server.getSize();
 	}
 
@@ -66,16 +64,7 @@ public class Simulator {
 		if (t != null) {
 			Customer newCust = (Customer) Generator.getTask("customer");
 			Controller.writeLog("Generating " + newCust.toString() + " at: " + StatisticalClock.CLOCK());
-			if (!queue.isFull()) {
-				Controller.writeLog("Queue is not full " + " at: " + StatisticalClock.CLOCK() + 
-						" " + newCust.toString() + " is taken by " + queue.toString());
-				newCust.setFlag();
-				queue.takeTaskIn(newCust);
-			} else {
-				Controller.writeLog("Queue is full " + " at: " + StatisticalClock.CLOCK() + 
-						" " + newCust.toString() + " is rejected");
-				counter.takeTaskIn(newCust);
-			}
+			queue.takeTaskIn(newCust);
 		}
 			
 	}

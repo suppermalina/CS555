@@ -21,6 +21,7 @@ import org.quartz.TriggerBuilder;
 
 import ContainersInstance.Server;
 import ContainersInstance.StateList;
+import ContainersInstance.StatisticalCounter;
 import ContainersInstance.TaskList;
 import EventsInstances.GenerateCustomer;
 import EventsInstances.PopCustomerOut;
@@ -34,27 +35,27 @@ public class Controller {
 	// controller
 	// The average arriving rate
 	// The service rate
-	private double miu = 1;
+	private double lambda = 0.50;
 	private long endingTime = 5000;
 	public static Deque<Task> localLogRecorder;
 	private static Scheduler schedule = null;
 	private static JobBuilder builder = null;
 	public static boolean flag = false;
-	private ReportGenerator reporter;
+	
 	// These two lists were in the Simulator class
 	public static StateList log;
 	public static TaskList tasks;
+	public static StatisticalCounter counter;
 
 	private static JobDataMap data = null;
 
 	private Controller() {
 		System.out.println("Controller ready");
-		reporter = new ReportGenerator();
 		org.apache.log4j.PropertyConfigurator.configure("/Users/mali/Documents/workspace/CS555/src/log4j.properties");
 	}
 
 	private void setUp() {
-
+		counter = (StatisticalCounter) Generator.getContainer("counter");
 		log = (StateList) Generator.getContainer("statelist");
 		tasks = (TaskList) Generator.getContainer("tasklist");
 		try {
@@ -124,22 +125,19 @@ public class Controller {
 	private boolean signals() {
 		long initialTime = StatisticalClock.CLOCK();
 		writeLog("signals() was started at: " + initialTime);
-		System.out.println("Is it here?");
-		int counter = 1;
+ 		int counter = 1;
 		while (StatisticalClock.CLOCK() <= endingTime) {
-			System.out.println("the " + counter++ + "th loop");
 			if (initialTime <= 5 || flag == true) {
-				long predictiTime = (long) (RandomNumberGenerator.getInstance(miu) * 1000);
+				// predictTime here is used for generating the coming new customer
+				long predictTime = (long) (RandomNumberGenerator.getInstance(lambda) * 1000);
 				// The task should be sent to the tasklist
 				GenerateCustomer tempGenerateSignal = new GenerateCustomer();
-				tempGenerateSignal.setInterval(predictiTime);
-				tempGenerateSignal.markCustomerID(tempGenerateSignal.getId());
-				tempGenerateSignal.setInterval(predictiTime);
+				tempGenerateSignal.setInterval(predictTime);				
 				Controller.tasks.takeTaskIn(tempGenerateSignal);
-				JobDetail job = builder.newJob(GenerateCustomer.class).withIdentity(tempGenerateSignal.toString()).storeDurably(false)
+				JobDetail job = builder.newJob(GenerateCustomer.class).withIdentity(tempGenerateSignal.toString())
 						.usingJobData(data).build();
 				Trigger trigger = TriggerBuilder.newTrigger()
-						.withIdentity("Trigger for " + tempGenerateSignal.toString()).startAt(new Date(predictiTime))
+						.withIdentity("Trigger for " + tempGenerateSignal.toString()).startAt(new Date(predictTime))
 						.build();
 				try {
 					schedule.scheduleJob(job, trigger);
@@ -149,19 +147,12 @@ public class Controller {
 				}
 				initialTime = -1;
 				flag = false;
-				if (StatisticalClock.CLOCK() % 5l == 0) {
-					
-					reporter.writeLog("--------------------------------------------------------------------");
-					reporter.writeLog("There are total " + simulator.currentState() + " customers in the system at: "
-							+ StatisticalClock.CLOCK());
-					reporter.writeLog("--------------------------------------------------------------------");
-				}
 			}
 		}
 		try {
 			while (Server.monitor.getJobGroupNames().isEmpty() && schedule.getJobGroupNames().isEmpty()) {
 				exportLog();
-				reporter.exportLog();
+				ReportGenerator.exportLog();
 				System.out.println("closed");
 				System.exit(1);
 			}

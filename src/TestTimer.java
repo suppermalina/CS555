@@ -3,7 +3,6 @@ import java.util.TimerTask;
 
 import ExecutionalInstances.RandomNumberGenerator;
 import ExecutionalInstances.StatisticalClock;
-import ExecutionalInstances.TestSingleton;
 
 /**
  * 

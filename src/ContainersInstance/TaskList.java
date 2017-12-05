@@ -59,8 +59,8 @@ public class TaskList extends Containers {
 	@Override
 	public  void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
-		System.out.println("The " + counter++ + "th " + e.getTyp() + " task into tasklist");
-		Controller.writeLog(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+		//System.out.println("The " + counter++ + "th " + e.getTyp() + " task into tasklist");
+		Controller.writeLog(this.toString() + " takes such an information: " + e.toString());
 		tasklist.offer(e);
 	}
 

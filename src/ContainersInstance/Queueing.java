@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import EventsInstances.Customer;
 import ExecutionalInstances.Controller;
+import ExecutionalInstances.ReportGenerator;
 import ExecutionalInstances.StatisticalClock;
 import Model.Containers;
 import Model.Task;
@@ -20,55 +21,85 @@ public class Queueing extends Containers {
 	private final int capacity = 5;
 	private boolean checkIdle;
 	private static int queueID = 1;
-	private Controller controller;
 	// Deuqe provides convenient methods to implement the FIFO principle
 	private static Deque<Task> queue;
 	private Controller contoller;
 	private static int counter = 0;
-	
+	private static Queueing instance = null;
+	private Servers server = Servers.getInstance();
+	private ReportGenerator reporter;
+
 	public Queueing() {
 		this.type = "QUEUE";
 		this.ID = queueID++;
-		controller = Controller.getInstance();
+		reporter = new ReportGenerator();
 		queue = new LinkedList<Task>();
 		System.out.println("Queue is ready");
 	}
 
-	/* (non-Javadoc)
+	public static synchronized Queueing getInstance() {
+		if (instance == null) {
+			instance = new Queueing();
+		}
+		return instance;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public synchronized void takeTaskIn(Task e) {
+	public void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
-		System.out.println(e.toString() + " in queue");
-		controller.writeLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
-		if (Servers.isIdle()) {
-			Servers.takeQueue(this);;
-			Controller.writeLog("size of queue is " + this.getSize());
-			Controller.writeLog(e.toString() + " is going to the server " + StatisticalClock.CLOCK());
-			Servers.takeIntoServer();
-		} else {
-			queue.offerLast(e);
+		Customer tempCust = (Customer) e;
+		System.out.println("Queue tries to accept " + e.toString() + " at: " + StatisticalClock.CLOCK());
+		Controller.writeLog("Queue tries to accept " + e.toString() + " at: " + StatisticalClock.CLOCK());
+		if (StatisticalClock.CLOCK() % 5l == 0) {
+
+			reporter.writeLog("--------------------------------------------------------------------");
+			reporter.writeLog("There are total " + (this.getSize() + server.getSize()) + " customers in the system at: "
+					+ StatisticalClock.CLOCK());
+			reporter.writeLog("--------------------------------------------------------------------");
 		}
+		if (this.isFull()) {
+			if (server.isIdle()) {
+				server.takeIntoServer();
+				if (!this.isFull()) {
+					tempCust.setFlag();
+					queue.offerLast(tempCust);
+				}
+				Controller.writeLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+			} else {
+				Controller.writeLog(tempCust.toString() + " is rejected at: " + StatisticalClock.CLOCK());
+				System.out.println(tempCust.toString() + " is REJECTED!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			}
+		} else {
+			tempCust.setFlag();
+			queue.offerLast(tempCust);
+			Controller.writeLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+		}
+		
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see Model.Containers#popTaskOut()
 	 */
 	@Override
-	public synchronized Task popTaskOut() {
+	public Task popTaskOut() {
 		// TODO Auto-generated method stub
 		return queue.pollFirst();
 	}
-	
-	public static synchronized boolean isIdle() {
-		return queue.isEmpty();
+
+	public boolean isIdle() {
+		return getSize() == 0;
 	}
-	
-	public static synchronized boolean isFull() {
-		return queue.size() >= 5;
+
+	public boolean isFull() {
+		return getSize() >= 5;
 	}
-	
 
 	@Override
 	public synchronized int getSize() {

@@ -51,6 +51,7 @@ public class Server extends Containers {
 	// private static TriggerBuilder tirgger = null;
 	private static long index = 1;
 	private static JobDataMap data = null;
+	public boolean trigger = false;
 		
 	
 	public Server() {
@@ -63,7 +64,7 @@ public class Server extends Containers {
 		try {
 			monitor = schedFact.getScheduler();
 			monitor.start();
-			builder = JobBuilder.newJob(Customer.class);
+			builder = JobBuilder.newJob(PopCustomerOut.class);
 			data = new JobDataMap();
 		} catch (SchedulerException e) {
 			logger.error("main(String[])", e); //$NON-NLS-1$
@@ -75,11 +76,11 @@ public class Server extends Containers {
 	}
 	
 	public synchronized boolean isFull() {
-		return server.size() > 0;
+		return getSize() > 0;
 	}
 	
-	public synchronized boolean isIdle() {
-		return server.size() == 0;
+	public boolean isIdle() {
+		return getSize() == 0;
 	}
 	
 	/* 
@@ -87,20 +88,26 @@ public class Server extends Containers {
 	 */
 	@Override
 	public void takeTaskIn(Task e) {
-		if (server.size() == 0) {
+		if (getSize() == 0) {
 			// TODO Auto-generated method stub
 			Customer temp = (Customer)e;
+			String custInfor = temp.toString();
 			Controller.writeLog(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
-			
+			System.out.println(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+			System.out.println(this.toString());
+			temp.getServerTrigger(this);
+			server.add(temp);
 			// Once a customer was accepted by any one of the servers, then a poping signal
 			// task should be generated immediately
 			long predictiTime = (long) (RandomNumberGenerator.getInstance(miu) * 1000);
 			Controller.writeLog(this.toString() + " assigns " + e.toString() + " predictied service time: " + StatisticalClock.CLOCK());
-
-			JobDetail job = builder.newJob(Customer.class).withIdentity(temp.toString()).usingJobData(data).storeDurably(false)
+			JobDetail job = builder.newJob(PopCustomerOut.class).withIdentity(custInfor).usingJobData("ServerID", this.ID)
 					.build();
-			Trigger trigger = TriggerBuilder.newTrigger().withIdentity("Trigger for " + temp.toString())
+			Controller.writeLog("scheduled job for " + custInfor + " was setted up at: " + StatisticalClock.CLOCK());
+
+			Trigger trigger = TriggerBuilder.newTrigger().withIdentity(custInfor)
 					.startAt(new Date(predictiTime)).build();
+			
 			// The task should be sent to the tasklist
 			PopCustomerOut tempPop = new PopCustomerOut();
 			tempPop.markTargetID(temp.getId());
@@ -122,7 +129,8 @@ public class Server extends Containers {
 	public Task popTaskOut() {
 		// TODO Auto-generated method stub
 		Task t = server.remove(0);
-		
+		Controller.writeLog(this.toString() + " popps " + t.toString() + " predictied service time: " + StatisticalClock.CLOCK());
+		Controller.counter.takeTaskIn(t);
 		Servers.takeIntoServer();
 		return t;
 	}

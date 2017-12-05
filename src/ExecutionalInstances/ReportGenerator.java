@@ -39,7 +39,7 @@ public class ReportGenerator {
 		}
 	}
 
-	public void exportLog() {
+	public static void exportLog() {
 		try {
 			if (writer != null) {
 				writer.flush();

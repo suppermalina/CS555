@@ -8,6 +8,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import ContainersInstance.Server;
+import ExecutionalInstances.Controller;
 import ExecutionalInstances.StatisticalClock;
 import Model.*;
 
@@ -15,11 +16,12 @@ import Model.*;
  * @author mali
  *
  */
-public class Customer extends Task implements Job {
+public class Customer extends Task {
 	private boolean flag;
 	private static int customerID = 1;
 	private long enterServer;
-
+	public boolean trigger;
+	private Server temp = null;
 	/**
 	 * @param type
 	 * @param id
@@ -29,6 +31,7 @@ public class Customer extends Task implements Job {
 		this.type = "customer";
 		this.id = customerID++;
 		this.initialTime = StatisticalClock.CLOCK();
+		Controller.writeLog(this.toString() + " was created at " + this.initialTime);
 	}
 
 	// If the customer is accepted by the system, then the flag = true
@@ -71,13 +74,11 @@ public class Customer extends Task implements Job {
 	public void setTimeEnteringServer() {
 		this.enterServer = StatisticalClock.CLOCK();
 	}
-	private Server temp = null;
 	public void getServerTrigger(Server s) {
+		System.out.println("temp hold by " + this.toString() + " takes " + s.toString());
 		temp = s;
 	}
-	@Override
-	public void execute(JobExecutionContext jobContext) throws JobExecutionException {
-		// TODO Auto-generated method stub
-		temp.popTaskOut();
+	public String toString() {
+		return this.type + this.id;
 	}
 }
