@@ -1,45 +1,65 @@
 package ContainersInstance;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import EventsInstances.Customer;
 import EventsInstances.PopCustomerOut;
 import ExecutionalInstances.Controller;
 import ExecutionalInstances.Generator;
 import ExecutionalInstances.RandomNumberGenerator;
+import ExecutionalInstances.StatisticalClock;
 import Model.Task;
 
 // At the very beginning, I planed to implement a service system contains two or more
 // servers by combining two instanced Server together with a data structure
 public class Servers {	
-	Server one;
-	Server two;
+	private static Server one;
+	private static Server two;
+	private static Queueing queue = null;
+	private static Lock lock;
+
+	protected static void takeQueue(Queueing queue) {
+		Servers.queue = queue;
+	}
 	
 	public Servers() {
+		lock = new ReentrantLock();
 		one = (Server) Generator.getContainer("server");
 		two = (Server) Generator.getContainer("server");
 	}
 	
-	public synchronized boolean enterServers(Task e) {
-		if (isIdle()) {
-			double random = Math.random();
-			if (random <= 0.5) {
-				one.takeTaskIn(e);
-			} else {
-				two.takeTaskIn(e);
+	protected static void takeIntoServer() {
+		if (lock.tryLock()) {
+			try {
+				while (!queue.isIdle()) {
+					if (one.isIdle() && two.isIdle()) {
+						Task temp = queue.popTaskOut();
+						Controller.writeLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
+								" " + temp.toString() + " DIRECT!!!!!!!!");
+						double random = Math.random();
+						if (random <= 0.5) {
+							one.takeTaskIn(temp);
+						} else {
+							two.takeTaskIn(temp);
+						}
+					} else if (one.isIdle()) {
+						Task temp = queue.popTaskOut();
+						Controller.writeLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
+								" " + temp.toString() + " DIRECT!!!!!!!!");
+						one.takeTaskIn(temp);
+					} else if (two.isIdle()) {
+						Task temp = queue.popTaskOut();
+						Controller.writeLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
+								" " + temp.toString() + " DIRECT!!!!!!!!");
+						two.takeTaskIn(temp);
+					}
+				}
+			} finally {
+				lock.unlock();
 			}
-		} else if (!one.isFull()) {
-			one.takeTaskIn(e);
-		} else {
-			two.takeTaskIn(e);
 		}
-		return true;
-	}
-	
-	public synchronized Server getTheFreeOne() {
-		if (one.isIdle()) {
-			return one;
-		} else if (two.isIdle()) {
-			return two;
-		} return null;
+
 	}
 	
 	public synchronized int getSize() {
@@ -47,7 +67,7 @@ public class Servers {
 	}
 	
 	// isIdle means all servers are empty
-	public synchronized boolean isIdle() {
+	public synchronized static boolean isIdle() {
 		return one.isIdle() && two.isIdle();
 	}
 	
@@ -56,11 +76,4 @@ public class Servers {
 		return one.isFull() || two.isFull();
 	}
 	
-	public synchronized Task popCust(int id) {
-		if (one.findCustomer(id) == true) {
-			return one.popTaskOut();
-		} else if (two.findCustomer(id) == true) {
-			return two.popTaskOut();
-		} else return null;
-	}
 }

@@ -4,13 +4,23 @@
 package ExecutionalInstances;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.*;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.quartz.JobBuilder;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
 
 import ContainersInstance.*;
 import EventsInstances.Customer;
 import EventsInstances.PopCustomerOut;
 import Model.Containers;
 import Model.Task;
+
 
 /**
  * @author mali
@@ -21,21 +31,22 @@ public class Simulator {
 	// If a system has multiple servers and multiple queues, and they are not
 	// combined
 	// then we will need this to find the location of a specific customer
-	private Map<Integer, Containers> customerFinder;
 	private StatisticalCounter counter;
 	private Servers server;
 	private Queueing queue;
-	private Lock lock;
-
+	
 	private Simulator() {
+		org.apache.log4j.PropertyConfigurator.configure("/Users/mali/Documents/workspace/CS555/src/log4j.properties");
 		System.out.println("Simulator ready");
+
 	}
 
 	protected void setUp() {
+		
 		server = new Servers();
 		queue = (Queueing) Generator.getContainer("queue");
 		counter = (StatisticalCounter) Generator.getContainer("counter");
-		lock = new ReentrantLock();
+		
 	}
 
 	private static Simulator instance = null;
@@ -52,7 +63,23 @@ public class Simulator {
 	}
 
 	public void generateNewCustomer(Task t) {
-		if (lock.tryLock()) {
+		if (t != null) {
+			Customer newCust = (Customer) Generator.getTask("customer");
+			Controller.writeLog("Generating " + newCust.toString() + " at: " + StatisticalClock.CLOCK());
+			if (!queue.isFull()) {
+				Controller.writeLog("Queue is not full " + " at: " + StatisticalClock.CLOCK() + 
+						" " + newCust.toString() + " is taken by " + queue.toString());
+				newCust.setFlag();
+				queue.takeTaskIn(newCust);
+			} else {
+				Controller.writeLog("Queue is full " + " at: " + StatisticalClock.CLOCK() + 
+						" " + newCust.toString() + " is rejected");
+				counter.takeTaskIn(newCust);
+			}
+		}
+			
+	}
+		/*if (lock.tryLock()) {
 			Controller.writeLog(
 					t.toString() + " is holding the lock in " + "generateNewCustomer at: " + StatisticalClock.CLOCK());
 			try {
@@ -114,11 +141,12 @@ public class Simulator {
 		} else {
 			Controller.writeLog(t.toString() + " is waiting for the lock in " + "generateNewCustomer at: "
 					+ StatisticalClock.CLOCK());
-		}
-	}
+		}*/
+		
+}
 
-	protected void popCustomer(PopCustomerOut p) {
-		if (lock.tryLock()) {
+	//protected void popCustomer(PopCustomerOut p) {
+		/*if (lock.tryLock()) {
 			Controller.writeLog(
 					p.toString() + " is holding the lock in " + "popCustomer at: " + StatisticalClock.CLOCK());
 			try {
@@ -154,7 +182,6 @@ public class Simulator {
 		} else {
 			Controller.writeLog(
 					p.toString() + " is waiting for the lock in " + "popCustomer at: " + StatisticalClock.CLOCK());
-		}
-	}
+		}*/
 
-}
+

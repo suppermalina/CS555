@@ -17,7 +17,7 @@ public abstract class Containers {
 	protected String type;
 	protected int ID;
 	
-	public abstract boolean takeTaskIn(Task e);
+	public abstract void takeTaskIn(Task e);
 	public abstract Task popTaskOut();
 	public int getState() {
 		return container.size();

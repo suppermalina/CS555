@@ -30,9 +30,8 @@ public class StateList extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public synchronized boolean takeTaskIn(Task t) {
+	public synchronized void takeTaskIn(Task t) {
 		// TODO Auto-generated method stub
-		return false;
 	}
 
 	/* (non-Javadoc)

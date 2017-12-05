@@ -17,8 +17,6 @@ public class Test {
 	public static void main(String[] args) {
 		controller = Controller.getInstance();
 		controller.start();
-		controller.exportLog();
-	
-		
+
 	}
 }

@@ -7,7 +7,7 @@ package Model;
  * @author mali
  *
  */
-public class SystemState {
+public class SystemState extends Task {
 	private int state;
 	private long time;
 	

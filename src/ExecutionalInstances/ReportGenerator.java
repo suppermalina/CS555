@@ -18,7 +18,9 @@ import Model.SystemState;
 public class ReportGenerator {
 	private static FileWriter output;
 	private static BufferedWriter writer;
-
+	public ReportGenerator() {
+		generateLogWriter();
+	}
 	private void generateLogWriter() {
 		try {
 			output = new FileWriter(new File("/Users/mali/Desktop/555Project/report.txt"));
@@ -28,7 +30,7 @@ public class ReportGenerator {
 		}
 	}
 
-	public static void writeLog(String str) {
+	public void writeLog(String str) {
 		try {
 			writer.write(str);
 			writer.newLine();

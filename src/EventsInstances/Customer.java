@@ -3,6 +3,11 @@
  */
 package EventsInstances;
 
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+
+import ContainersInstance.Server;
 import ExecutionalInstances.StatisticalClock;
 import Model.*;
 
@@ -10,7 +15,7 @@ import Model.*;
  * @author mali
  *
  */
-public class Customer extends Task {
+public class Customer extends Task implements Job {
 	private boolean flag;
 	private static int customerID = 1;
 	private long enterServer;
@@ -20,6 +25,7 @@ public class Customer extends Task {
 	 * @param id
 	 */
 	public Customer() {
+		org.apache.log4j.PropertyConfigurator.configure("/Users/mali/Documents/workspace/CS555/src/log4j.properties");
 		this.type = "customer";
 		this.id = customerID++;
 		this.initialTime = StatisticalClock.CLOCK();
@@ -65,5 +71,13 @@ public class Customer extends Task {
 	public void setTimeEnteringServer() {
 		this.enterServer = StatisticalClock.CLOCK();
 	}
-
+	private Server temp = null;
+	public void getServerTrigger(Server s) {
+		temp = s;
+	}
+	@Override
+	public void execute(JobExecutionContext jobContext) throws JobExecutionException {
+		// TODO Auto-generated method stub
+		temp.popTaskOut();
+	}
 }

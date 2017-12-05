@@ -27,9 +27,9 @@ public class StatisticalCounter extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public synchronized boolean takeTaskIn(Task e) {
+	public synchronized void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
-		return counter.offerLast(e);
+		counter.offerLast(e);
 	}
 
 	/* (non-Javadoc)

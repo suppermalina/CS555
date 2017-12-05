@@ -26,16 +26,15 @@ import Model.Task;
  *
  */
 public final class Generator {
-	public static long intervalForGenerating;
-	public static long intervalForPoping;
+
 	public static Task getTask(String type) {
 		// TODO Auto-generated method stub
 		if (type.equalsIgnoreCase("customer")) {
 			return new Customer();
 		} else if (type.equalsIgnoreCase("generating")) {
-			return new GenerateCustomer(intervalForGenerating);
+			return new GenerateCustomer();
 		} else if (type.equalsIgnoreCase("poping")) {
-			return new PopCustomerOut(intervalForPoping);
+			return new PopCustomerOut();
 		} else {
 			System.exit(-1);
 			new Exception("Illegal type!!!");
@@ -46,7 +45,7 @@ public final class Generator {
 	public static Containers getContainer(String type) {
 		// TODO Auto-generated method stub
 		if (type.equalsIgnoreCase("server")) {
-			return new Server(2);
+			return new Server();
 		} else if (type.equalsIgnoreCase("queue")) {
 			return new Queueing();
 		} else if (type.equalsIgnoreCase("statelist")) {

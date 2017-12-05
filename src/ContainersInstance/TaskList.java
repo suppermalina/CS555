@@ -57,31 +57,13 @@ public class TaskList extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public  boolean takeTaskIn(Task e) {
+	public  void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
 		System.out.println("The " + counter++ + "th " + e.getTyp() + " task into tasklist");
-		return tasklist.offer(e);
-
+		Controller.writeLog(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+		tasklist.offer(e);
 	}
 
-	public boolean popTaskOut(Task t) {
-		// TODO Auto-generated method stub
-		if (!tasklist.isEmpty() && tasklist.peek().equals(t)) {
-			Controller.writeLog(t.toString() + " is removed from tasklist at " + StatisticalClock.CLOCK());
-			Controller.localLogRecorder.offerLast(tasklist.poll());
-			return true;
-		} else {
-			Controller.writeLog(t.toString() + " is the task need to be removed");
-			Controller.writeLog(t.getTimeInform());
-			Controller.writeLog(tasklist.peek().toString() + " is the one on the top");
-			Controller.writeLog(tasklist.peek().getTimeInform());
-			if (tasklist.peek().getTerminalTime() < t.getTerminalTime()) {
-				Controller.writeLog(tasklist.peek().toString() + " is going to be deleted by cheating");
-				tasklist.poll().getLocalTask().cancel();
-			}
-			return true;
-		}
-	}
 
 	@Override
 	public synchronized int getSize() {
@@ -92,7 +74,7 @@ public class TaskList extends Containers {
 	@Override
 	public Task popTaskOut() {
 		// TODO Auto-generated method stub
-		return null;
+		return tasklist.poll();
 	}
 
 }

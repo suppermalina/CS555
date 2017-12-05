@@ -22,9 +22,10 @@ public class Queueing extends Containers {
 	private static int queueID = 1;
 	private Controller controller;
 	// Deuqe provides convenient methods to implement the FIFO principle
-	private Deque<Task> queue;
+	private static Deque<Task> queue;
 	private Controller contoller;
 	private static int counter = 0;
+	
 	public Queueing() {
 		this.type = "QUEUE";
 		this.ID = queueID++;
@@ -37,11 +38,18 @@ public class Queueing extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public synchronized boolean takeTaskIn(Task e) {
+	public synchronized void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
-		System.out.println(e + "in queue");
+		System.out.println(e.toString() + " in queue");
 		controller.writeLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
-		return queue.offerLast(e);
+		if (Servers.isIdle()) {
+			Servers.takeQueue(this);;
+			Controller.writeLog("size of queue is " + this.getSize());
+			Controller.writeLog(e.toString() + " is going to the server " + StatisticalClock.CLOCK());
+			Servers.takeIntoServer();
+		} else {
+			queue.offerLast(e);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -53,20 +61,17 @@ public class Queueing extends Containers {
 		return queue.pollFirst();
 	}
 	
-	public synchronized boolean isIdle() {
-		return queue.size() == 0;
+	public static synchronized boolean isIdle() {
+		return queue.isEmpty();
 	}
 	
-	public synchronized boolean isFull() {
+	public static synchronized boolean isFull() {
 		return queue.size() >= 5;
 	}
 	
-	public synchronized int firstCustID() {
-		return queue.peek().getId();
-	}
 
 	@Override
-	public int getSize() {
+	public synchronized int getSize() {
 		// TODO Auto-generated method stub
 		return queue.size();
 	}
