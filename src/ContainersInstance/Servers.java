@@ -25,6 +25,8 @@ public class Servers {
 		lock = new ReentrantLock();
 		one = (Server) Generator.getContainer("server");
 		two = (Server) Generator.getContainer("server");
+		servers[0] = one;
+		servers[1] = two;
 	}
 	
 	public static synchronized Servers getInstance() {

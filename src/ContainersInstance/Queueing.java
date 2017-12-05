@@ -18,7 +18,7 @@ import Model.Task;
  *
  */
 public class Queueing extends Containers {
-	private final int capacity = 5;
+	public final int capacity = 5;
 	private boolean checkIdle;
 	private static int queueID = 1;
 	// Deuqe provides convenient methods to implement the FIFO principle
@@ -27,12 +27,12 @@ public class Queueing extends Containers {
 	private static int counter = 0;
 	private static Queueing instance = null;
 	private Servers server = Servers.getInstance();
-	private ReportGenerator reporter;
+	
 
 	public Queueing() {
 		this.type = "QUEUE";
 		this.ID = queueID++;
-		reporter = new ReportGenerator();
+		
 		queue = new LinkedList<Task>();
 		System.out.println("Queue is ready");
 	}
@@ -55,13 +55,6 @@ public class Queueing extends Containers {
 		Customer tempCust = (Customer) e;
 		System.out.println("Queue tries to accept " + e.toString() + " at: " + StatisticalClock.CLOCK());
 		Controller.writeLog("Queue tries to accept " + e.toString() + " at: " + StatisticalClock.CLOCK());
-		if (StatisticalClock.CLOCK() % 5l == 0) {
-
-			reporter.writeLog("--------------------------------------------------------------------");
-			reporter.writeLog("There are total " + (this.getSize() + server.getSize()) + " customers in the system at: "
-					+ StatisticalClock.CLOCK());
-			reporter.writeLog("--------------------------------------------------------------------");
-		}
 		if (this.isFull()) {
 			if (server.isIdle()) {
 				server.takeIntoServer();
@@ -78,6 +71,8 @@ public class Queueing extends Containers {
 			tempCust.setFlag();
 			queue.offerLast(tempCust);
 			Controller.writeLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+			Controller.writeLog(queue.peekFirst().toString() + " on the head at: " + StatisticalClock.CLOCK());
+
 		}
 		
 	}
@@ -98,7 +93,7 @@ public class Queueing extends Containers {
 	}
 
 	public boolean isFull() {
-		return getSize() >= 5;
+		return getSize() >= this.capacity;
 	}
 
 	@Override

@@ -36,18 +36,19 @@ public class Controller {
 	// The average arriving rate
 	// The service rate
 	private double lambda = 0.50;
-	private long endingTime = 5000;
+	private long endingTime = 10000;
 	public static Deque<Task> localLogRecorder;
 	private static Scheduler schedule = null;
 	private static JobBuilder builder = null;
 	public static boolean flag = false;
-	
+
 	// These two lists were in the Simulator class
 	public static StateList log;
 	public static TaskList tasks;
 	public static StatisticalCounter counter;
-
+	private ReportGenerator reporter;
 	private static JobDataMap data = null;
+	private boolean cheating = true;
 
 	private Controller() {
 		System.out.println("Controller ready");
@@ -58,6 +59,7 @@ public class Controller {
 		counter = (StatisticalCounter) Generator.getContainer("counter");
 		log = (StateList) Generator.getContainer("statelist");
 		tasks = (TaskList) Generator.getContainer("tasklist");
+		reporter = new ReportGenerator();
 		try {
 			SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
 			schedule = schedFact.getScheduler();
@@ -81,7 +83,7 @@ public class Controller {
 	}
 
 	private static Simulator simulator = Simulator.getInstance();
-	
+
 	// private Map<Integer, Task> timerPool = new HashMap<Integer, Task>();
 
 	public synchronized void addTask(Task t) {
@@ -122,24 +124,53 @@ public class Controller {
 		}
 	}
 
+	private static boolean signal = true;
+
+	public static boolean signalFromController(boolean stop) {
+		signal = stop;
+		return stop;
+	}
+
+	private boolean noMoreCheating() {
+		return signalFromController(signal);
+	}
+
 	private boolean signals() {
 		long initialTime = StatisticalClock.CLOCK();
 		writeLog("signals() was started at: " + initialTime);
- 		int counter = 1;
+		System.out.println("signals() was started at: " + initialTime);
 		while (StatisticalClock.CLOCK() <= endingTime) {
-			if (initialTime <= 5 || flag == true) {
-				// predictTime here is used for generating the coming new customer
+			if (StatisticalClock.CLOCK() % 5l == 0) {
+
+				reporter.writeLog("--------------------------------------------------------------------");
+				reporter.writeLog("There are total " + simulator.currentState() + " customers in the system at: "
+						+ StatisticalClock.CLOCK());
+				reporter.writeLog("--------------------------------------------------------------------");
+			}
+			simulator.modify();
+			long makeUpForCheating = 0;
+			if (cheating) {
+				makeUpForCheating = 250;
+			} else {
+				makeUpForCheating = 0;
+			}
+			if (initialTime <= 500 || flag == true) {
+				// predictTime here is used for generating the coming new
+				// customer
 				long predictTime = (long) (RandomNumberGenerator.getInstance(lambda) * 1000);
 				// The task should be sent to the tasklist
 				GenerateCustomer tempGenerateSignal = new GenerateCustomer();
-				tempGenerateSignal.setInterval(predictTime);				
+				tempGenerateSignal.setInterval(predictTime);
 				Controller.tasks.takeTaskIn(tempGenerateSignal);
 				JobDetail job = builder.newJob(GenerateCustomer.class).withIdentity(tempGenerateSignal.toString())
 						.usingJobData(data).build();
 				Trigger trigger = TriggerBuilder.newTrigger()
-						.withIdentity("Trigger for " + tempGenerateSignal.toString()).startAt(new Date(predictTime))
+						.withIdentity("Trigger for " + tempGenerateSignal.toString()).startAt(new Date(predictTime + makeUpForCheating))
 						.build();
 				try {
+					if (cheating) {
+						Controller.writeLog("******************************Earily bird is waiting in the queue**********************************");
+					}
 					schedule.scheduleJob(job, trigger);
 				} catch (SchedulerException e) {
 					// TODO Auto-generated catch block
@@ -163,65 +194,15 @@ public class Controller {
 		return true;
 	}
 
-	// private int counter = 1;
-
-	// This method is used to generate signals for generating new customer
-	/*
-	 * private boolean signals() { long initialTime = StatisticalClock.CLOCK();
-	 * // Test.averageSignalInitiatingTime += initialTime;
-	 * writeLog("signals() was started at: " + initialTime); while
-	 * (StatisticalClock.CLOCK() <= endingTime) {
-	 * //this.writeLog("This is the counter " + counter++ +
-	 * "th loop in the signals loop"); // A generating signal should be
-	 * generated once at the very // beginning // or a new customer is generated
-	 * //this.writeLog("Now the flag is " + flag + " before doit()"); flag =
-	 * doit(); //this.writeLog("Now the flag is " + flag + " after doit()"); //
-	 * this.writeLog("Now the flag is " + flag + " after receiver()"); if
-	 * (initialTime == 0 || flag == true) { delay = (long)
-	 * (RandomNumberGenerator.getInstance(lambda) * 1000); GenerateCustomer
-	 * tempCust = (GenerateCustomer) Generator.getTask("generating"); //
-	 * System.out.println("Is this gener " + tempCust.getId() + " + // " +
-	 * tempCust.getTerminalTime()); tasks.takeTaskIn(tempCust); String
-	 * information = tempCust.toString() + " being generated at :"; //
-	 * System.out.println(tasks.getSize()); // System.out.println(information +
-	 * StatisticalClock.CLOCK()); this.writeLog(information +
-	 * StatisticalClock.CLOCK()); initialTime = -1; flag = false; }
-	 * System.out.println("generating signal skips at: " +
-	 * StatisticalClock.CLOCK()); } while (StatisticalClock.CLOCK() >
-	 * this.endingTime) { System.out.println(log); System.out.println("Over");
-	 * System.exit(1); return true; } return false; }
-	 */
-
-	/*
-	 * public static void notified(Task t) { if (lock.tryLock()) {
-	 * writeLog(t.toString() +
-	 * " is holding the ReentrantLock in notified() at: " +
-	 * StatisticalClock.CLOCK()); try { if (t == null) {
-	 * System.out.println("it's null"); } else {
-	 * System.out.println("center received the task"); }
-	 * 
-	 * // Once a signal task informs the controller that it reaches the // due
-	 * // time, it has to be popped out from the tasklist
-	 * System.out.println("Task " + t.getTyp() + " update at: " +
-	 * StatisticalClock.CLOCK()); //this part used to be update if (t instanceof
-	 * GenerateCustomer) { writeLog("Generating signal from " + t.toString() +
-	 * " at: " + StatisticalClock.CLOCK()); simulator.generateNewCustomer(t); }
-	 * else { writeLog("Poping signal from " + t.toString() + " at: " +
-	 * StatisticalClock.CLOCK()); simulator.popCustomer((PopCustomerOut) t); }
-	 * SystemState currentState = new SystemState(StatisticalClock.CLOCK(),
-	 * simulator.currentState()); log.takeStateIn(currentState); } finally {
-	 * writeLog(t.toString() + " is going to unlock the ReentrantLock at: " +
-	 * StatisticalClock.CLOCK()); lock.unlock(); } } else {
-	 * writeLog(t.toString() +
-	 * " is waiting for the ReentrantLock in notified at: " +
-	 * StatisticalClock.CLOCK()); } }
-	 */
-
-	public boolean start() {
+	public void start() {
 		setUp();
-		simulator.setUp();
 		generateLogWriter();
+		simulator.setUp();
+		boolean starts = simulator.specialSituation_PartialFull(4);
+		
 		writeLog("Simulator starts at: " + StatisticalClock.CLOCK() + ", ending time is: " + this.endingTime);
-		return signals();
+		if (starts) {
+			signals();
+		}
 	}
 }

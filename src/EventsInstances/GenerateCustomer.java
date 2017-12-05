@@ -59,7 +59,7 @@ public class GenerateCustomer extends Task implements Job {
 	@Override
 	public void execute(JobExecutionContext arg0) throws JobExecutionException {
 		// TODO Auto-generated method stub
-		Controller.writeLog(this.toString() + " excuted at " + StatisticalClock.CLOCK());
+		Controller.writeLog(this.type + " " + this.getId() + " excuted at " + StatisticalClock.CLOCK());
 		access.generateNewCustomer(this);
 		setFlag();
 	}
