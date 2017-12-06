@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.*;
 
-
 import ContainersInstance.Server;
 import ContainersInstance.StateList;
 import ContainersInstance.StatisticalCounter;
@@ -38,10 +37,15 @@ public class Controller {
 	public static StateList log;
 	public static TaskList tasks;
 	public static StatisticalCounter counter;
-	private ReportGenerator reporter;
+	public static ReportGenerator reporter;
+	public static long initialTime;
+	protected static long samplePoint = 500;
+	private static long recordPoint = 100;
+	protected Deque<Long> timeRecorder;
 
+	
 	public static Timer monitor;
-
+	private Lock lock;
 	private Controller() {
 		System.out.println("Controller ready");
 	}
@@ -54,6 +58,8 @@ public class Controller {
 		monitor = new Timer();
 		timerPool = new HashSet<Timer>();
 		timerLock = new ReentrantLock();
+		timeRecorder = new LinkedList<Long>();
+		lock = new ReentrantLock();
 	}
 
 	private static Controller instance = null;;
@@ -65,7 +71,7 @@ public class Controller {
 		return instance;
 	}
 
-	private static Simulator simulator = Simulator.getInstance();
+	protected static Simulator simulator = Simulator.getInstance();
 
 	// private Map<Integer, Task> timerPool = new HashMap<Integer, Task>();
 
@@ -74,52 +80,21 @@ public class Controller {
 		// timerPool.put(t.getId(), t);
 	}
 
-	private static FileWriter output;
-	private static BufferedWriter writer;
-
-	private void generateLogWriter() {
-		try {
-			output = new FileWriter(new File("/Users/mali/Desktop/555Project/log.txt"));
-			writer = new BufferedWriter(output);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void writeLog(String str) {
-		try {
-			writer.write(str);
-			writer.newLine();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void exportLog() {
-		try {
-			if (writer != null) {
-				writer.flush();
-				output.close();
-				writer.close();
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
+	
 	private boolean signals() {
-		long initialTime = StatisticalClock.CLOCK();
-		writeLog("signals() was started at: " + initialTime);
 		System.out.println("signals() was started at: " + initialTime);
 		while (StatisticalClock.CLOCK() <= endingTime) {
-			if (StatisticalClock.CLOCK() % 5l == 0) {
+			if (StatisticalClock.CLOCK() % samplePoint == 0) {
 
-				reporter.writeLog("--------------------------------------------------------------------");
-				reporter.writeLog("There are total " + simulator.currentState() + " customers in the system at: "
+				/*reporter.writeRepor("--------------------------------------------------------------------");
+				reporter.writeRepor("There are total " + simulator.currentState() + " customers in the system at: "
 						+ StatisticalClock.CLOCK());
-				reporter.writeLog("--------------------------------------------------------------------");
+				reporter.writeRepor("--------------------------------------------------------------------");*/
+				long time = StatisticalClock.CLOCK();
+				simulator.dataForPloting(time);
+
 			}
-			if (initialTime <= 260 || flag == true) {
+			if (initialTime == 0 || flag == true) {
 				// predictTime here is used for generating the coming new
 				// customer
 				long predictTime = (long) (RandomNumberGenerator.getInstance(lambda) * 1000);
@@ -131,6 +106,7 @@ public class Controller {
 				if (timerLock.tryLock()) {
 					try {
 						monitor.schedule(tempGenerateSignal, predictTime);
+						reporter.generatingLog(tempGenerateSignal.toString() + predictTime);
 					} finally {
 						timerLock.unlock();
 					}
@@ -144,19 +120,25 @@ public class Controller {
 		return true;
 	}
 
-	public void start() {
+	public void systemShutDown() {
+		System.out.println("over");
+		System.exit(1);
+	}
+
+	public boolean start() {
+		initialTime = StatisticalClock.CLOCK();
 		setUp();
-		generateLogWriter();
+		reporter.generateLogWriter();
 		simulator.setUp();
 		System.out.println("ok");
 		boolean starts = simulator.specialSituation_SystemFull();
 		simulator.modify();
-		writeLog("Simulator starts at: " + StatisticalClock.CLOCK() + ", ending time is: " + this.endingTime);
+		reporter.writeRepor(
+				"Simulator starts at: " + StatisticalClock.CLOCK() + ", ending time is: " + this.endingTime);
+		boolean ok = false;
 		if (starts) {
-			signals();
-			this.exportLog();
-			ReportGenerator.generatingReport();
-			ReportGenerator.closeLog();
+			ok = signals();
 		}
+		return ok;
 	}
 }

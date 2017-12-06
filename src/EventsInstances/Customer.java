@@ -24,10 +24,10 @@ public class Customer extends Task {
 	 * @param id
 	 */
 	public Customer() {
-		this.type = "customer";
+		this.type = "CUSTOMER";
 		this.id = customerID++;
 		this.initialTime = StatisticalClock.CLOCK();
-		Controller.writeLog(this.toString() + " was created at " + this.initialTime);
+		Controller.reporter.generatingLog(this.toString() + " was created at " + this.initialTime);
 	}
 
 	// If the customer is accepted by the system, then the flag = true

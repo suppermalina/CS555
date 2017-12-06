@@ -182,20 +182,6 @@ public class TestRNG {
 		}
 	}
 	
-	/*private void plotting() {
-		getDataFromRNG();
-		processData();
-		prepareCDF();
-		XYChart chart = new XYChartBuilder().xAxisTitle("Index").yAxisTitle("RandomValue").width(1000).height(800).build();
-		chart.getStyler().setYAxisMax((double)demo1.size());
-	    XYSeries series = chart.addSeries("test", xData, yData);
-	    series.setMarker(SeriesMarkers.CIRCLE);
-	    series.setMarkerColor(Color.RED);
-	    series.setLineColor(Color.BLACK);
-	    series.setLineWidth(0.3f);
-	    new SwingWrapper(chart).displayChart();
-	}*/
-	
 	private void plotting() {
 		getDataFromRNG();
 	    processData();
@@ -217,22 +203,6 @@ public class TestRNG {
 	    }
 	    new SwingWrapper<XYChart>(charts).displayChartMatrix();
 	 }
-	
-	/*private void test() {
-		getDataFromRNG();
-	    processData();
-	    for (int j = 0; j < minHeapGroup.size(); j++) {
-	    	HeapWithInformation temp = minHeapGroup.get(j);
-	    	minHeap = temp.getMinHeap();
-	    	System.out.println("Size of the j minheap is" + minHeap.size());
-	    	String nameOfSequence = temp.getName();
-	    	System.out.println("name of the j minheap is" + nameOfSequence);
-	    	prepareCDF(minHeap);
-	    	System.out.println(nameOfSequence);
-	    	System.out.println(xData);
-	    	System.out.println(yData);
-	    }
-	}*/
 	
 	class HeapWithInformation {
 		private PriorityQueue<Map.Entry<Integer, Double>> minHeap;

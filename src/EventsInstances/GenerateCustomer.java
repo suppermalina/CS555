@@ -50,7 +50,7 @@ public class GenerateCustomer extends Task {
 
 	public String toString() {
 		return this.type + generateCustomerID + " is generated at: " + this.initialTime + " will be executed at: "
-				+ this.terminalTime;
+				+ this.terminalTime + " with interval";
 	}
 
 

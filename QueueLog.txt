@@ -1,0 +1,127 @@
+Queue tries to accept CUSTOMER3 at: 207
+CUSTOMER3 on the head at: 207
+Queue takes CUSTOMER3 at: 207
+Queue tries to accept CUSTOMER4 at: 207
+CUSTOMER3 on the head at: 207
+Queue takes CUSTOMER4 at: 207
+Queue tries to accept CUSTOMER5 at: 207
+CUSTOMER3 on the head at: 207
+Queue takes CUSTOMER5 at: 207
+Queue tries to accept CUSTOMER6 at: 207
+CUSTOMER3 on the head at: 207
+Queue takes CUSTOMER6 at: 207
+Queue tries to accept CUSTOMER7 at: 207
+CUSTOMER3 on the head at: 207
+Queue takes CUSTOMER7 at: 207
+Queue tries to accept CUSTOMER8 at: 414
+CUSTOMER8 is rejected at: 414
+Queue tries to accept CUSTOMER9 at: 498
+CUSTOMER9 is rejected at: 498
+Queue tries to accept CUSTOMER10 at: 647
+CUSTOMER10 is rejected at: 647
+Queue tries to accept CUSTOMER11 at: 737
+CUSTOMER11 is rejected at: 737
+Queue tries to accept CUSTOMER12 at: 838
+CUSTOMER12 is rejected at: 838
+Queue tries to accept CUSTOMER13 at: 890
+CUSTOMER13 is rejected at: 890
+Queue tries to accept CUSTOMER14 at: 1149
+CUSTOMER4 on the head at: 1149
+Queue takes CUSTOMER14 at: 1149
+Queue tries to accept CUSTOMER15 at: 1170
+CUSTOMER15 is rejected at: 1170
+Queue tries to accept CUSTOMER16 at: 1314
+CUSTOMER16 is rejected at: 1314
+Queue tries to accept CUSTOMER17 at: 1352
+CUSTOMER17 is rejected at: 1352
+Queue tries to accept CUSTOMER18 at: 1368
+CUSTOMER18 is rejected at: 1368
+Queue tries to accept CUSTOMER19 at: 1453
+CUSTOMER19 is rejected at: 1453
+Queue tries to accept CUSTOMER20 at: 1499
+CUSTOMER20 is rejected at: 1500
+Queue tries to accept CUSTOMER21 at: 1758
+CUSTOMER21 is rejected at: 1758
+Queue tries to accept CUSTOMER22 at: 1927
+CUSTOMER22 is rejected at: 1927
+Queue tries to accept CUSTOMER23 at: 2042
+CUSTOMER23 is rejected at: 2042
+Queue tries to accept CUSTOMER24 at: 2241
+CUSTOMER24 is rejected at: 2241
+Queue tries to accept CUSTOMER25 at: 2274
+CUSTOMER25 is rejected at: 2274
+Queue tries to accept CUSTOMER26 at: 2332
+CUSTOMER26 is rejected at: 2332
+Queue tries to accept CUSTOMER27 at: 2432
+CUSTOMER27 is rejected at: 2432
+Queue tries to accept CUSTOMER28 at: 2608
+CUSTOMER28 is rejected at: 2608
+Queue tries to accept CUSTOMER29 at: 2760
+CUSTOMER29 is rejected at: 2760
+Queue tries to accept CUSTOMER30 at: 3054
+CUSTOMER30 is rejected at: 3054
+Queue tries to accept CUSTOMER31 at: 3108
+CUSTOMER31 is rejected at: 3108
+Queue tries to accept CUSTOMER32 at: 3123
+CUSTOMER32 is rejected at: 3123
+Queue tries to accept CUSTOMER33 at: 3199
+CUSTOMER33 is rejected at: 3199
+Queue tries to accept CUSTOMER34 at: 3214
+CUSTOMER34 is rejected at: 3214
+Queue tries to accept CUSTOMER35 at: 3301
+CUSTOMER35 is rejected at: 3302
+Queue tries to accept CUSTOMER36 at: 3526
+CUSTOMER36 is rejected at: 3526
+Queue tries to accept CUSTOMER37 at: 3529
+CUSTOMER37 is rejected at: 3529
+Queue tries to accept CUSTOMER38 at: 3584
+CUSTOMER5 on the head at: 3584
+Queue takes CUSTOMER38 at: 3584
+Queue tries to accept CUSTOMER39 at: 3621
+CUSTOMER6 on the head at: 3621
+Queue takes CUSTOMER39 at: 3621
+Queue tries to accept CUSTOMER40 at: 3741
+CUSTOMER7 on the head at: 3741
+Queue takes CUSTOMER40 at: 3741
+Queue tries to accept CUSTOMER41 at: 3948
+CUSTOMER38 on the head at: 3948
+Queue takes CUSTOMER41 at: 3948
+Queue tries to accept CUSTOMER42 at: 3962
+CUSTOMER38 on the head at: 3962
+Queue takes CUSTOMER42 at: 3962
+Queue tries to accept CUSTOMER43 at: 4016
+CUSTOMER43 is rejected at: 4016
+Queue tries to accept CUSTOMER44 at: 4043
+CUSTOMER44 is rejected at: 4043
+Queue tries to accept CUSTOMER45 at: 4095
+CUSTOMER45 is rejected at: 4095
+Queue tries to accept CUSTOMER46 at: 4163
+CUSTOMER46 is rejected at: 4164
+Queue tries to accept CUSTOMER47 at: 4220
+CUSTOMER47 is rejected at: 4220
+Queue tries to accept CUSTOMER48 at: 4278
+CUSTOMER48 is rejected at: 4278
+Queue tries to accept CUSTOMER49 at: 4422
+CUSTOMER49 is rejected at: 4422
+Queue tries to accept CUSTOMER50 at: 4444
+CUSTOMER50 is rejected at: 4444
+Queue tries to accept CUSTOMER51 at: 4566
+CUSTOMER51 is rejected at: 4566
+Queue tries to accept CUSTOMER52 at: 4621
+CUSTOMER52 is rejected at: 4622
+Queue tries to accept CUSTOMER53 at: 4627
+CUSTOMER53 is rejected at: 4627
+Queue tries to accept CUSTOMER54 at: 4685
+CUSTOMER54 is rejected at: 4685
+Queue tries to accept CUSTOMER55 at: 4713
+CUSTOMER55 is rejected at: 4713
+Queue tries to accept CUSTOMER56 at: 4771
+CUSTOMER39 on the head at: 4771
+Queue takes CUSTOMER56 at: 4771
+Queue tries to accept CUSTOMER57 at: 4848
+CUSTOMER57 is rejected at: 4848
+Queue tries to accept CUSTOMER58 at: 4897
+CUSTOMER58 is rejected at: 4898
+Queue tries to accept CUSTOMER59 at: 4997
+CUSTOMER40 on the head at: 4997
+Queue takes CUSTOMER59 at: 4997

@@ -51,7 +51,7 @@ public class StateList extends Containers {
 	private int counter = 1;
 	public void takeStateIn(SystemState state) {
 		// TODO Auto-generated method stub
-		Controller.writeLog("statelist takes " + counter++ + "th state");
+		//Controller.writeLog("statelist takes " + counter++ + "th state");
 		statelist.offerLast(state);
 	}
 

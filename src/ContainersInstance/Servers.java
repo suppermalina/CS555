@@ -20,7 +20,9 @@ public class Servers {
 	public static Server[] servers;
 	private static Servers instance = null;;
 	private static Queueing queue = Queueing.getInstance();
+	public static int customerInServers;
 	public Servers() {
+		customerInServers = 0;
 		servers = new Server[2];
 		lock = new ReentrantLock();
 		one = (Server) Generator.getContainer("server");
@@ -40,11 +42,12 @@ public class Servers {
 		if (lock.tryLock()) {
 			try {
 				if (!queue.isIdle()) {
+					customerInServers++;
 					if (one.isIdle() && two.isIdle()) {
 						Task temp = queue.popTaskOut();
 						System.out.println("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
 								" " + temp.toString() + " DIRECT!!!!!!!!");
-						Controller.writeLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
+						Controller.reporter.serverLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
 								" " + temp.toString() + " DIRECT!!!!!!!!");
 						double random = Math.random();
 						if (random <= 0.5) {
@@ -54,14 +57,14 @@ public class Servers {
 						}
 					} else if (one.isIdle()) {
 						Task temp = queue.popTaskOut();
-						Controller.writeLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
+						Controller.reporter.serverLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
 								" " + temp.toString() + " DIRECT!!!!!!!!");
 						System.out.println("Server one is idle " + " at: " + StatisticalClock.CLOCK() + 
 								" " + temp.toString() + " DIRECT!!!!!!!!");
 						one.takeTaskIn(temp);
 					} else if (two.isIdle()) {
 						Task temp = queue.popTaskOut();
-						Controller.writeLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
+						Controller.reporter.serverLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
 								" " + temp.toString() + " DIRECT!!!!!!!!");
 						System.out.println("Server two is idle " + " at: " + StatisticalClock.CLOCK() + 
 								" " + temp.toString() + " DIRECT!!!!!!!!");

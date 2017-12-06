@@ -1,0 +1,42 @@
+SERVER1 takes CUSTOMER1 at: 7
+SERVER1 assigns CUSTOMER1 predictied service time: 206
+******************************cheating in SERVER1 is true**********************************
+SERVER2 takes CUSTOMER2 at: 207
+SERVER2 assigns CUSTOMER2 predictied service time: 207
+******************************cheating in SERVER2 is true**********************************
+Servers are all idle  at: 1084 CUSTOMER3 DIRECT!!!!!!!!
+SERVER1 takes CUSTOMER3 at: 1084
+SERVER1 assigns CUSTOMER3 predictied service time: 1085
+******************************cheating in SERVER1 is false**********************************
+Servers are all idle  at: 3566 CUSTOMER4 DIRECT!!!!!!!!
+SERVER1 takes CUSTOMER4 at: 3566
+SERVER1 assigns CUSTOMER4 predictied service time: 3566
+******************************cheating in SERVER1 is false**********************************
+Servers are all idle  at: 3600 CUSTOMER5 DIRECT!!!!!!!!
+SERVER2 takes CUSTOMER5 at: 3600
+SERVER2 assigns CUSTOMER5 predictied service time: 3600
+******************************cheating in SERVER2 is false**********************************
+Servers are all idle  at: 3687 CUSTOMER6 DIRECT!!!!!!!!
+SERVER1 takes CUSTOMER6 at: 3687
+SERVER1 assigns CUSTOMER6 predictied service time: 3688
+******************************cheating in SERVER1 is false**********************************
+Servers are all idle  at: 3813 CUSTOMER7 DIRECT!!!!!!!!
+SERVER1 takes CUSTOMER7 at: 3813
+SERVER1 assigns CUSTOMER7 predictied service time: 3813
+******************************cheating in SERVER1 is false**********************************
+Servers are all idle  at: 3858 CUSTOMER14 DIRECT!!!!!!!!
+SERVER1 takes CUSTOMER14 at: 3858
+SERVER1 assigns CUSTOMER14 predictied service time: 3858
+******************************cheating in SERVER1 is false**********************************
+Servers are all idle  at: 4750 CUSTOMER38 DIRECT!!!!!!!!
+SERVER2 takes CUSTOMER38 at: 4750
+SERVER2 assigns CUSTOMER38 predictied service time: 4750
+******************************cheating in SERVER2 is false**********************************
+Servers are all idle  at: 4968 CUSTOMER39 DIRECT!!!!!!!!
+SERVER1 takes CUSTOMER39 at: 4968
+SERVER1 assigns CUSTOMER39 predictied service time: 4968
+******************************cheating in SERVER1 is false**********************************
+Servers are all idle  at: 4997 CUSTOMER40 DIRECT!!!!!!!!
+SERVER1 takes CUSTOMER40 at: 4997
+SERVER1 assigns CUSTOMER40 predictied service time: 4998
+******************************cheating in SERVER1 is false**********************************

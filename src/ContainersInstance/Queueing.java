@@ -27,12 +27,12 @@ public class Queueing extends Containers {
 	private static int counter = 0;
 	private static Queueing instance = null;
 	private Servers server = Servers.getInstance();
-	
+	public Set<Customer> rejected;
 
 	public Queueing() {
 		this.type = "QUEUE";
 		this.ID = queueID++;
-		
+		rejected = new HashSet<Customer>();
 		queue = new LinkedList<Task>();
 		System.out.println("Queue is ready");
 	}
@@ -53,8 +53,9 @@ public class Queueing extends Containers {
 	public void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
 		Customer tempCust = (Customer) e;
-		System.out.println("Queue tries to accept " + e.toString() + " at: " + StatisticalClock.CLOCK());
-		Controller.writeLog("Queue tries to accept " + e.toString() + " at: " + StatisticalClock.CLOCK());
+		// System.out.println("Queue tries to accept " + e.toString() + " at: "
+		// + StatisticalClock.CLOCK());
+		Controller.reporter.queueLog("Queue tries to accept " + e.toString() + " at: " + StatisticalClock.CLOCK());
 		if (this.isFull()) {
 			if (server.isIdle()) {
 				server.takeIntoServer();
@@ -62,19 +63,18 @@ public class Queueing extends Containers {
 					tempCust.setFlag();
 					queue.offerLast(tempCust);
 				}
-				Controller.writeLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+				Controller.reporter.queueLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
 			} else {
-				Controller.writeLog(tempCust.toString() + " is rejected at: " + StatisticalClock.CLOCK());
-				System.out.println(tempCust.toString() + " is REJECTED!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				Controller.reporter.queueLog(tempCust.toString() + " is rejected at: " + StatisticalClock.CLOCK());
+				rejected.add(tempCust);
 			}
 		} else {
 			tempCust.setFlag();
 			queue.offerLast(tempCust);
-			Controller.writeLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
-			Controller.writeLog(queue.peekFirst().toString() + " on the head at: " + StatisticalClock.CLOCK());
-
+			Controller.reporter.queueLog(queue.peekFirst().toString() + " on the head at: " + StatisticalClock.CLOCK());
+			Controller.reporter.queueLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
 		}
-		
+
 	}
 
 	/*

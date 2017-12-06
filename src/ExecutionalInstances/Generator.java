@@ -25,7 +25,7 @@ import Model.Task;
  * @author mali
  *
  */
-public final class Generator {
+public final class Generator implements Runnable{
 
 	public static Task getTask(String type) {
 		// TODO Auto-generated method stub
@@ -59,6 +59,12 @@ public final class Generator {
 			new Exception("Illegal type!!!");
 			return null;
 		}
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

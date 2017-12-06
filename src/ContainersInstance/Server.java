@@ -39,6 +39,8 @@ public class Server extends Containers {
 	private static long index = 1;
 	private static Timer scheduler;
 	private Lock timerLock;
+	private Map<Long, Integer> cdfData;
+	private Map<Long, Integer> pmfData;
 	public Server() {
 		this.type = "SERVER";
 		this.ID = this.serverID++;
@@ -78,7 +80,7 @@ public class Server extends Containers {
 			// TODO Auto-generated method stub
 			Customer temp = (Customer) e;
 			boolean cheating = noCheating(signal);
-			Controller.writeLog(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+			Controller.reporter.serverLog(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
 			System.out.println(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
 			System.out.println(this.toString());
 			temp.getServerTrigger(this);
@@ -87,7 +89,7 @@ public class Server extends Containers {
 			// poping signal
 			// task should be generated immediately
 			long predictiTime = (long) (RandomNumberGenerator.getInstance(miu) * 1000);
-			Controller.writeLog(this.toString() + " assigns " + e.toString() + " predictied service time: "
+			Controller.reporter.serverLog(this.toString() + " assigns " + e.toString() + " predictied service time: "
 					+ StatisticalClock.CLOCK());
 
 			long makeUpForCheating = 0;
@@ -103,10 +105,10 @@ public class Server extends Containers {
 			tempPop.setInterval(predictiTime);
 			Controller.tasks.takeTaskIn(tempPop);
 			if (cheating) {
-				Controller.writeLog(
+				Controller.reporter.writeRepor(
 						"******************************Earily bird is waiting in the server**********************************");
 			}
-			Controller.writeLog(
+			Controller.reporter.serverLog(
 					"******************************cheating in " + this.toString() + " is " + cheating + "**********************************");
 			tempPop.getServerID(this.ID);
 			
@@ -127,8 +129,8 @@ public class Server extends Containers {
 	public Task popTaskOut() {
 		// TODO Auto-generated method stub
 		Task t = server.remove(0);
-		Controller.writeLog(
-				this.toString() + " popps " + t.toString() + " predictied service time: " + StatisticalClock.CLOCK());
+		Controller.reporter.popingLog(
+				this.toString() + " popps " + t.toString() + " at: " + StatisticalClock.CLOCK());
 		Controller.counter.takeTaskIn(t);
 		Servers.takeIntoServer();
 		return t;
