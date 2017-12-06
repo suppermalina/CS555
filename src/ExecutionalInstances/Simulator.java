@@ -8,12 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.*;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.quartz.JobBuilder;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
 
 import ContainersInstance.*;
 import EventsInstances.Customer;
@@ -35,7 +29,6 @@ public class Simulator {
 	private Queueing queue;
 	
 	private Simulator() {
-		org.apache.log4j.PropertyConfigurator.configure("/Users/mali/Documents/workspace/CS555/src/log4j.properties");
 		System.out.println("Simulator ready");
 
 	}
@@ -51,11 +44,7 @@ public class Simulator {
 	
 	protected boolean specialSituation_SystemFull() {
 		for (int i = 0; i < 2; i++) {
-			Customer temp = (Customer) Generator.getTask("customer");
-			System.out.println("Is the server null???" + (server.servers[i] == null));
-			System.out.println("Is the customer null???" + (temp == null));
-
-			server.servers[i].takeTaskIn(temp);
+			server.servers[i].takeTaskIn(Generator.getTask("customer"));
 		}
 		for (int i = 0; i < queue.capacity; i++) {
 			Customer temp = (Customer) Generator.getTask("customer");
@@ -69,18 +58,16 @@ public class Simulator {
 			for (int i = 0; i < 2; i++) {
 				server.servers[i].takeTaskIn(Generator.getTask("customer"));
 			}
-			modify();
 		}
 		for (int i = 0; i < t - 2; i++) {
 			queue.takeTaskIn(Generator.getTask("customer"));
-			Controller.signalFromController(false);
 		}
 		return true;
 	}
 	
 	protected void modify() {
-		server.servers[0].signalFromSimulator(false);
-		server.servers[1].signalFromSimulator(false);
+		server.servers[0].modify();
+		server.servers[1].modify();
 	}
 	
 	public static synchronized Simulator getInstance() {

@@ -12,7 +12,7 @@ import java.util.TimerTask;
  * @author mali
  *
  */
-public abstract class Task {
+public abstract class Task extends TimerTask {
 	// This variable is set for those tasks will be send to the tasklist
 	protected static int idForTaskList = 1;
 	protected int id;

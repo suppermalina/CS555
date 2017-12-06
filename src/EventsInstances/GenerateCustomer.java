@@ -9,9 +9,6 @@ import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 import ExecutionalInstances.Controller;
 import ExecutionalInstances.RandomNumberGenerator;
@@ -24,7 +21,7 @@ import Model.Task;
  * @author mali
  *
  */
-public class GenerateCustomer extends Task implements Job {
+public class GenerateCustomer extends Task {
 	// This is used to mark this object is the ith specific task being generated
 	private static int generateCustomerID = 1;
 	private Simulator access = Simulator.getInstance();
@@ -42,7 +39,7 @@ public class GenerateCustomer extends Task implements Job {
 
 	public GenerateCustomer() {
 		// log4j is required by the quartz lib
-		org.apache.log4j.PropertyConfigurator.configure("/Users/mali/Documents/workspace/CS555/src/log4j.properties");
+		//org.apache.log4j.PropertyConfigurator.configure("/Users/mali/Documents/workspace/CS555/src/log4j.properties");
 		// A instanced controller here is a registered observer
 		// Due to the controller class is a final class and the instance is
 		// synchronized, so all signal tasks share the same instance
@@ -56,16 +53,16 @@ public class GenerateCustomer extends Task implements Job {
 				+ this.terminalTime;
 	}
 
-	@Override
-	public void execute(JobExecutionContext arg0) throws JobExecutionException {
-		// TODO Auto-generated method stub
-		Controller.writeLog(this.type + " " + this.getId() + " excuted at " + StatisticalClock.CLOCK());
-		access.generateNewCustomer(this);
-		setFlag();
-	}
 
 	public void setFlag() {
 		Controller.flag = true;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		access.generateNewCustomer(this);
+		setFlag();
 	}
 
 }

@@ -3,9 +3,6 @@
  */
 package EventsInstances;
 
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 import ContainersInstance.Server;
 import ExecutionalInstances.Controller;
@@ -27,7 +24,6 @@ public class Customer extends Task {
 	 * @param id
 	 */
 	public Customer() {
-		org.apache.log4j.PropertyConfigurator.configure("/Users/mali/Documents/workspace/CS555/src/log4j.properties");
 		this.type = "customer";
 		this.id = customerID++;
 		this.initialTime = StatisticalClock.CLOCK();
@@ -80,5 +76,11 @@ public class Customer extends Task {
 	}
 	public String toString() {
 		return this.type + this.id;
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 }

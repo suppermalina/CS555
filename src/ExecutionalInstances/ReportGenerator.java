@@ -18,13 +18,15 @@ import Model.SystemState;
 public class ReportGenerator {
 	private static FileWriter output;
 	private static BufferedWriter writer;
+	private static FileWriter dataOutput;
+	private static BufferedWriter dataWriter;
 	public ReportGenerator() {
 		generateLogWriter();
 	}
-	private void generateLogWriter() {
+	private static void generateLogWriter() {
 		try {
-			output = new FileWriter(new File("/Users/mali/Desktop/555Project/report.txt"));
-			writer = new BufferedWriter(output);
+			dataOutput = new FileWriter(new File("/Users/mali/Desktop/555Project/data_report.txt"));
+			dataWriter = new BufferedWriter(dataOutput);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -38,27 +40,37 @@ public class ReportGenerator {
 			e.printStackTrace();
 		}
 	}
-
-	public static void exportLog() {
+	
+	private static void dataLog(String str) {
 		try {
-			if (writer != null) {
-				writer.flush();
-				output.close();
-				writer.close();
+			dataWriter.write(str);
+			dataWriter.newLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void closeLog() {
+		try {
+			if (dataWriter != null) {
+
+				dataWriter.flush();
+				dataOutput.close();
+				dataWriter.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void generatingReport() {
+	
+	public static void generatingReport() {
 		generateLogWriter();
 		StateList list = Controller.log;
 		while (list != null && !list.isEmpty()) {
 			SystemState state = list.popStateOut();
-			writeLog(state.toString());
+			dataLog(state.toString());
 		}
-		exportLog();
 	}
 
 	

@@ -4,17 +4,10 @@
 package ContainersInstance;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
+
 
 import EventsInstances.Customer;
 import EventsInstances.PopCustomerOut;
@@ -36,40 +29,22 @@ public class Server extends Containers {
 	private boolean isIdle;
 	private boolean isFull;
 	private int custID;
-	private boolean cheating = true;
 	// delay here is used to record the estimated service time
 	private long delay;
 	private static Integer serverID = 1;
 	private List<Task> server;
 	private double miu = 1;
 
-	private static final Logger logger = (Logger) LogManager.getLogger(TaskSchedule.class.getName());
-
-	public static Scheduler monitor = null;
-	private static JobBuilder builder = null;
 	// private static TriggerBuilder tirgger = null;
 	private static long index = 1;
-	private static JobDataMap data = null;
-	
-
+	private static Timer scheduler;
+	private Lock timerLock;
 	public Server() {
 		this.type = "SERVER";
 		this.ID = this.serverID++;
 		server = new ArrayList<Task>();
-		org.apache.log4j.PropertyConfigurator.configure("/Users/mali/Documents/workspace/CS555/src/log4j.properties");
-
-		SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
-		try {
-			monitor = schedFact.getScheduler();
-			monitor.start();
-			builder = JobBuilder.newJob(PopCustomerOut.class);
-			data = new JobDataMap();
-		} catch (SchedulerException e) {
-			logger.error("main(String[])", e); //$NON-NLS-1$
-
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		timerLock = new ReentrantLock();
+		this.scheduler = new Timer();
 		System.out.println("Server" + this.ID + "is ready");
 	}
 
@@ -81,25 +56,28 @@ public class Server extends Containers {
 		return getSize() == 0;
 	}
 	
-	private boolean signal = true;
+	private int signal = -1;
 	
-	public boolean signalFromSimulator(boolean stop) {
-		signal = stop;
-		return stop;
+	public void modify() {
+		signal = 1;
 	}
-	private boolean noMoreCheating() {
-		return signalFromSimulator(signal);
+	
+	private boolean noCheating(int a) {
+		if (a >= 0) {
+			return false;
+		} else return true;
 	}
-
+	
 	/*
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
 	public void takeTaskIn(Task e) {
+		
 		if (getSize() == 0) {
 			// TODO Auto-generated method stub
 			Customer temp = (Customer) e;
-			String custInfor = temp.toString();
+			boolean cheating = noCheating(signal);
 			Controller.writeLog(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
 			System.out.println(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
 			System.out.println(this.toString());
@@ -111,31 +89,33 @@ public class Server extends Containers {
 			long predictiTime = (long) (RandomNumberGenerator.getInstance(miu) * 1000);
 			Controller.writeLog(this.toString() + " assigns " + e.toString() + " predictied service time: "
 					+ StatisticalClock.CLOCK());
-			JobDetail job = builder.newJob(PopCustomerOut.class).withIdentity(custInfor)
-					.usingJobData("ServerID", this.ID).build();
-			Controller.writeLog("scheduled job for " + custInfor + " was setted up at: " + StatisticalClock.CLOCK());
+
 			long makeUpForCheating = 0;
 			if (cheating) {
 				makeUpForCheating = 250;
 			} else {
 				makeUpForCheating = 0;
 			}
-			Trigger trigger = TriggerBuilder.newTrigger().withIdentity(custInfor).startAt(new Date(predictiTime + makeUpForCheating))
-					.build();
 
 			// The task should be sent to the tasklist
 			PopCustomerOut tempPop = new PopCustomerOut();
 			tempPop.markTargetID(temp.getId());
 			tempPop.setInterval(predictiTime);
 			Controller.tasks.takeTaskIn(tempPop);
-			try {
-				if (cheating) {
-					Controller.writeLog("******************************Earily bird is waiting in the server**********************************");
+			if (cheating) {
+				Controller.writeLog(
+						"******************************Earily bird is waiting in the server**********************************");
+			}
+			Controller.writeLog(
+					"******************************cheating in " + this.toString() + " is " + cheating + "**********************************");
+			tempPop.getServerID(this.ID);
+			
+			if (timerLock.tryLock()) {
+				try {
+					Controller.monitor.schedule(tempPop, makeUpForCheating + predictiTime);
+				} finally {
+					timerLock.unlock();
 				}
-				monitor.scheduleJob(job, trigger);
-			} catch (SchedulerException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
 		}
 	}

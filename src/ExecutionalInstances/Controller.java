@@ -10,14 +10,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.*;
 
-import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 
 import ContainersInstance.Server;
 import ContainersInstance.StateList;
@@ -35,24 +27,23 @@ public class Controller {
 	// controller
 	// The average arriving rate
 	// The service rate
-	private double lambda = 0.50;
-	private long endingTime = 10000;
+	private double lambda = 0.10;
+	private long endingTime = 5000;
 	public static Deque<Task> localLogRecorder;
-	private static Scheduler schedule = null;
-	private static JobBuilder builder = null;
 	public static boolean flag = false;
+	public static Set<Timer> timerPool;
+	private Lock timerLock;
 
 	// These two lists were in the Simulator class
 	public static StateList log;
 	public static TaskList tasks;
 	public static StatisticalCounter counter;
 	private ReportGenerator reporter;
-	private static JobDataMap data = null;
-	private boolean cheating = true;
+
+	public static Timer monitor;
 
 	private Controller() {
 		System.out.println("Controller ready");
-		org.apache.log4j.PropertyConfigurator.configure("/Users/mali/Documents/workspace/CS555/src/log4j.properties");
 	}
 
 	private void setUp() {
@@ -60,17 +51,9 @@ public class Controller {
 		log = (StateList) Generator.getContainer("statelist");
 		tasks = (TaskList) Generator.getContainer("tasklist");
 		reporter = new ReportGenerator();
-		try {
-			SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
-			schedule = schedFact.getScheduler();
-			schedule.start();
-			builder = JobBuilder.newJob(GenerateCustomer.class);
-			data = new JobDataMap();
-		} catch (SchedulerException e) {
-
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		monitor = new Timer();
+		timerPool = new HashSet<Timer>();
+		timerLock = new ReentrantLock();
 	}
 
 	private static Controller instance = null;;
@@ -124,17 +107,6 @@ public class Controller {
 		}
 	}
 
-	private static boolean signal = true;
-
-	public static boolean signalFromController(boolean stop) {
-		signal = stop;
-		return stop;
-	}
-
-	private boolean noMoreCheating() {
-		return signalFromController(signal);
-	}
-
 	private boolean signals() {
 		long initialTime = StatisticalClock.CLOCK();
 		writeLog("signals() was started at: " + initialTime);
@@ -147,50 +119,28 @@ public class Controller {
 						+ StatisticalClock.CLOCK());
 				reporter.writeLog("--------------------------------------------------------------------");
 			}
-			simulator.modify();
-			long makeUpForCheating = 0;
-			if (cheating) {
-				makeUpForCheating = 250;
-			} else {
-				makeUpForCheating = 0;
-			}
-			if (initialTime <= 500 || flag == true) {
+			if (initialTime <= 260 || flag == true) {
 				// predictTime here is used for generating the coming new
 				// customer
 				long predictTime = (long) (RandomNumberGenerator.getInstance(lambda) * 1000);
 				// The task should be sent to the tasklist
-				GenerateCustomer tempGenerateSignal = new GenerateCustomer();
+				GenerateCustomer tempGenerateSignal = (GenerateCustomer) Generator.getTask("generating");
 				tempGenerateSignal.setInterval(predictTime);
 				Controller.tasks.takeTaskIn(tempGenerateSignal);
-				JobDetail job = builder.newJob(GenerateCustomer.class).withIdentity(tempGenerateSignal.toString())
-						.usingJobData(data).build();
-				Trigger trigger = TriggerBuilder.newTrigger()
-						.withIdentity("Trigger for " + tempGenerateSignal.toString()).startAt(new Date(predictTime + makeUpForCheating))
-						.build();
-				try {
-					if (cheating) {
-						Controller.writeLog("******************************Earily bird is waiting in the queue**********************************");
+
+				if (timerLock.tryLock()) {
+					try {
+						monitor.schedule(tempGenerateSignal, predictTime);
+					} finally {
+						timerLock.unlock();
 					}
-					schedule.scheduleJob(job, trigger);
-				} catch (SchedulerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 				initialTime = -1;
 				flag = false;
 			}
 		}
-		try {
-			while (Server.monitor.getJobGroupNames().isEmpty() && schedule.getJobGroupNames().isEmpty()) {
-				exportLog();
-				ReportGenerator.exportLog();
-				System.out.println("closed");
-				System.exit(1);
-			}
-		} catch (SchedulerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		monitor.cancel();
+
 		return true;
 	}
 
@@ -198,11 +148,15 @@ public class Controller {
 		setUp();
 		generateLogWriter();
 		simulator.setUp();
-		boolean starts = simulator.specialSituation_PartialFull(4);
-		
+		System.out.println("ok");
+		boolean starts = simulator.specialSituation_SystemFull();
+		simulator.modify();
 		writeLog("Simulator starts at: " + StatisticalClock.CLOCK() + ", ending time is: " + this.endingTime);
 		if (starts) {
 			signals();
+			this.exportLog();
+			ReportGenerator.generatingReport();
+			ReportGenerator.closeLog();
 		}
 	}
 }

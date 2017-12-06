@@ -28,4 +28,10 @@ public class SystemState extends Task {
 		return "System has " + state + " customers at: " + time / 1000.0;
 	}
 
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
