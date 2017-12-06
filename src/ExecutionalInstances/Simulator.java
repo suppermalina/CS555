@@ -8,13 +8,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.locks.*;
 
-
 import ContainersInstance.*;
 import EventsInstances.Customer;
 import EventsInstances.PopCustomerOut;
 import Model.Containers;
 import Model.Task;
-
 
 /**
  * @author mali
@@ -29,81 +27,111 @@ public class Simulator {
 	private Queueing queue;
 	public int totalCustomersBeingGenerated;
 	private Lock lock;
+
 	private Simulator() {
 		System.out.println("Simulator ready");
 		lock = new ReentrantLock();
 	}
-	
-	private ArrayList<Long> plotExistCDFX;
+
+	private ArrayList<Double> plotExistCDFX;
 	private ArrayList<Integer> plotExistCDFY;
-	private ArrayList<Long> plotServiceCDFX;
+	private ArrayList<Double> plotServiceCDFX;
 	private ArrayList<Integer> plotServiceCDFY;
 
-	private ArrayList<Long> plotExistPMFX;
+	private ArrayList<Double> plotExistInQueX;
+	private ArrayList<Integer> plotExistInQueY;
+	private ArrayList<Double> plotInServiceX;
+	private ArrayList<Integer> plotInServiceY;
+	/*private ArrayList<Double> plotExistPMFX;
 	private ArrayList<Integer> plotExistPMFY;
-	private ArrayList<Long> plotServicePMFX;
-	private ArrayList<Integer> plotServicePMFY;
-	protected ArrayList<ArrayList<Long>> XAxis;
+	private ArrayList<Double> plotServicePMFX;
+	private ArrayList<Integer> plotServicePMFY;*/
+	protected ArrayList<ArrayList<Double>> XAxis;
 	protected ArrayList<ArrayList<Integer>> YAxis;
-	
+
 	protected void setUp() {
-		XAxis = new ArrayList<ArrayList<Long>>();
+		XAxis = new ArrayList<ArrayList<Double>>();
 		YAxis = new ArrayList<ArrayList<Integer>>();
-		plotExistCDFX = new ArrayList<Long>();
+		plotExistCDFX = new ArrayList<Double>();
 		plotExistCDFY = new ArrayList<Integer>();
-		plotServiceCDFX = new ArrayList<Long>();
+		plotServiceCDFX = new ArrayList<Double>();
 		plotServiceCDFY = new ArrayList<Integer>();
 
-		plotExistPMFX = new ArrayList<Long>();
+		plotExistInQueX = new ArrayList<Double>();
+		plotExistInQueY = new ArrayList<Integer>();
+		plotInServiceX = new ArrayList<Double>();
+		plotInServiceY = new ArrayList<Integer>();
+		
+		/*plotExistPMFX = new ArrayList<Double>();
 		plotExistPMFY = new ArrayList<Integer>();
-		plotServicePMFX = new ArrayList<Long>();
-		plotServicePMFY = new ArrayList<Integer>();
-		
+		plotServicePMFX = new ArrayList<Double>();
+		plotServicePMFY = new ArrayList<Integer>();*/
+
+		plotExistCDFX.add(0, 0.0);
+		plotExistInQueX.add(0, 1.0);
+		plotServiceCDFX.add(0, 2.0);
+		plotInServiceX.add(0, 3.0);
+
+		plotExistCDFY.add(0, 0);
+		plotExistInQueY.add(0, 1);
+		plotServiceCDFY.add(0, 2);
+		plotInServiceY.add(0, 3);
+
 		XAxis.add(0, plotExistCDFX);
-		XAxis.add(1, plotExistPMFX);
+		XAxis.add(1, plotExistInQueX);
 		XAxis.add(2, plotServiceCDFX);
-		XAxis.add(3, plotServicePMFX);
-		
+		XAxis.add(3, plotInServiceX);
+		//XAxis.add(1, plotExistPMFX);
+		//XAxis.add(3, plotServicePMFX);
 		YAxis.add(0, plotExistCDFY);
-		YAxis.add(1, plotExistPMFY);
+		YAxis.add(1, plotExistInQueY);
 		YAxis.add(2, plotServiceCDFY);
-		YAxis.add(3, plotServicePMFY);
+		YAxis.add(3, plotInServiceY);
 		server = Servers.getInstance();
 		queue = Queueing.getInstance();
 		totalCustomersBeingGenerated = 1;
 	}
-	private int lastForExist;
-	private int lastForService;
-	protected void dataForPloting(long time) {
-		if(lock.tryLock()) {
-			try {
-				
-				XAxis.get(0).add(time);
-				XAxis.get(1).add(time);
-				XAxis.get(2).add(time);
-				XAxis.get(3).add(time);
-				YAxis.get(0).add(this.totalCustomersBeingGenerated);
-				YAxis.get(2).add(server.customerInServers);
-				if(time <= Controller.samplePoint) {
-					YAxis.get(1).add(this.totalCustomersBeingGenerated);
-					YAxis.get(3).add(server.customerInServers);	
-					this.lastForExist = this.totalCustomersBeingGenerated;
-					this.lastForService = server.customerInServers;
-				} else {
-					YAxis.get(1).add(this.totalCustomersBeingGenerated - this.lastForExist);
-					YAxis.get(3).add(server.customerInServers - this.lastForService);	
-					this.lastForExist = this.totalCustomersBeingGenerated - this.lastForExist;
-					this.lastForService = server.customerInServers - this.lastForService;
-				} 
-			} finally {
-				lock.unlock();
-			}
-		}
-		
-	}
+	//int counter = 0;
+	private int lastForExist = 0;
+	private int lastForService = 0;
+	protected void dataForPloting(long inputTime) {
+		//boolean gate = false;
+		//Controller.reporter.dataLog("1. InputTime: " + inputTime + ". Counter: " + counter + ". Gate is " + gate);
+		//if (inputTime != 0) {
+			//gate = true;
+		//}
+		//Controller.reporter.dataLog("2. InputTime: " + inputTime + ". Counter: " + counter + ". Gate is " + gate);
+		//while (gate) {
+			//gate = false;
+			
 
+			double time = inputTime / 1000000000.0;
+			//Controller.reporter.dataLog(
+				//	"3. Sampling time: " + inputTime + ". InputTime: " + inputTime + ". InputTime divided by 1000 is: "
+					//		+ (inputTime / 1000.0) + ". Sampling times: " + ++counter + ". Gate is " + gate);
+			XAxis.get(0).add(time);
+			XAxis.get(1).add(time);
+			XAxis.get(2).add(time);
+			XAxis.get(3).add(time);
+			YAxis.get(0).add(this.totalCustomersBeingGenerated);
+			YAxis.get(1).add(queue.getSize());
+			//YAxis.get(1).add(this.totalCustomersBeingGenerated - lastForExist);
+			YAxis.get(2).add(server.customerInServers);
+			YAxis.get(3).add(server.getSize());
+			//YAxis.get(3).add(server.customerInServers - lastForService);
+			lastForExist = this.totalCustomersBeingGenerated;
+			lastForService = server.customerInServers;
+			
+
+			//counter = 0;
+			
+			// Controller.reporter.dataLog("6. InputTime: " + inputTime + ". Counter: " + ++counter + ". Gate is " + gate);
+		//}
+
+	}
 	
 	
+
 	protected Map<Set<Customer>, Integer> rejectStatData() {
 		Set<Customer> set = queue.rejected;
 		Map<Set<Customer>, Integer> map = new HashMap<Set<Customer>, Integer>();
@@ -112,7 +140,7 @@ public class Simulator {
 	}
 
 	private static Simulator instance = null;
-	
+
 	protected boolean specialSituation_SystemFull() {
 		for (int i = 0; i < 2; i++) {
 			server.servers[i].takeTaskIn(Generator.getTask("customer"));
@@ -123,7 +151,7 @@ public class Simulator {
 		}
 		return true;
 	}
-	
+
 	protected boolean specialSituation_PartialFull(int t) {
 		if (t >= 2) {
 			for (int i = 0; i < 2; i++) {
@@ -135,12 +163,12 @@ public class Simulator {
 		}
 		return true;
 	}
-	
+
 	protected void modify() {
 		server.servers[0].modify();
 		server.servers[1].modify();
 	}
-	
+
 	public static synchronized Simulator getInstance() {
 		if (instance == null) {
 			instance = new Simulator();
@@ -156,13 +184,11 @@ public class Simulator {
 		if (t != null) {
 			totalCustomersBeingGenerated++;
 			Customer newCust = (Customer) Generator.getTask("customer");
-			Controller.reporter.generatingLog(newCust.toString() + " was generated at: " + StatisticalClock.CLOCK() 
+			Controller.reporter.generatingLog(newCust.toString() + " was generated at: " + StatisticalClock.CLOCK()
 					+ ", involked by " + t.getTyp() + t.getId());
 			queue.takeTaskIn(newCust);
 		}
-			
+
 	}
-		
+
 }
-
-

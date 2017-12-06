@@ -18,7 +18,7 @@ import ExecutionalInstances.ReportGenerator;
 import ExecutionalInstances.StatisticalClock;
 import Model.Containers;
 import Model.Task;
-import TestQuatz.TaskSchedule;
+
 
 /**
  * @author mali
@@ -33,7 +33,7 @@ public class Server extends Containers {
 	private long delay;
 	private static Integer serverID = 1;
 	private List<Task> server;
-	private double miu = 1;
+	private double miu = 0.5;
 
 	// private static TriggerBuilder tirgger = null;
 	private static long index = 1;

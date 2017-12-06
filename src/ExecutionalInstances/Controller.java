@@ -17,7 +17,7 @@ import ContainersInstance.TaskList;
 import EventsInstances.GenerateCustomer;
 import EventsInstances.PopCustomerOut;
 import Model.*;
-import TestQuatz.TestJob;
+
 
 public class Controller {
 	// These two variables used be a part of GenerateCustomer and PopCustomerOut
@@ -26,8 +26,8 @@ public class Controller {
 	// controller
 	// The average arriving rate
 	// The service rate
-	private double lambda = 0.10;
-	private long endingTime = 5000;
+	private double lambda = 0.5;
+	private long endingTime = 10000;
 	public static Deque<Task> localLogRecorder;
 	public static boolean flag = false;
 	public static Set<Timer> timerPool;
@@ -39,13 +39,13 @@ public class Controller {
 	public static StatisticalCounter counter;
 	public static ReportGenerator reporter;
 	public static long initialTime;
-	protected static long samplePoint = 500;
+	protected static long samplePoint = 1000000;
 	private static long recordPoint = 100;
 	protected Deque<Long> timeRecorder;
 
-	
 	public static Timer monitor;
 	private Lock lock;
+
 	private Controller() {
 		System.out.println("Controller ready");
 	}
@@ -79,21 +79,37 @@ public class Controller {
 		tasks.takeTaskIn(t);
 		// timerPool.put(t.getId(), t);
 	}
-
 	
+	/*int testCount;
+	protected void dataForPloting(long inputTime) {
+		reporter.writeRepor("This is the " + ++testCount + "th time executing dataForPloting at: " + inputTime / 1000000.0);
+		
+		
+	}*/
+
 	private boolean signals() {
 		System.out.println("signals() was started at: " + initialTime);
+		int counter = 0;
 		while (StatisticalClock.CLOCK() <= endingTime) {
-			if (StatisticalClock.CLOCK() % samplePoint == 0) {
+			long time = StatisticalClock.NANOCLOCK();
+			long nanoPoint = TimeUnit.NANOSECONDS.toNanos(samplePoint);
+			if (time % nanoPoint == 0) {
 
-				/*reporter.writeRepor("--------------------------------------------------------------------");
-				reporter.writeRepor("There are total " + simulator.currentState() + " customers in the system at: "
-						+ StatisticalClock.CLOCK());
-				reporter.writeRepor("--------------------------------------------------------------------");*/
-				long time = StatisticalClock.CLOCK();
+				/*
+				 * reporter.writeRepor(
+				 * "--------------------------------------------------------------------"
+				 * ); reporter.writeRepor("There are total " +
+				 * simulator.currentState() + " customers in the system at: " +
+				 * StatisticalClock.CLOCK()); reporter.writeRepor(
+				 * "--------------------------------------------------------------------"
+				 * );
+				 */
+
 				simulator.dataForPloting(time);
+				//time = -1;
 
 			}
+			
 			if (initialTime == 0 || flag == true) {
 				// predictTime here is used for generating the coming new
 				// customer
@@ -113,6 +129,9 @@ public class Controller {
 				}
 				initialTime = -1;
 				flag = false;
+				//reporter.writeRepor("This is the " + ++counter + "th time executing "
+					//	+ "the signal() method, flag is: " + flag + ", initialTime is: " + initialTime
+						//+ ". At time: " + StatisticalClock.CLOCK());
 			}
 		}
 		monitor.cancel();

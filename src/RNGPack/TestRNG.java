@@ -204,6 +204,7 @@ public class TestRNG {
 	    new SwingWrapper<XYChart>(charts).displayChartMatrix();
 	 }
 	
+	
 	class HeapWithInformation {
 		private PriorityQueue<Map.Entry<Integer, Double>> minHeap;
 		private String nameOfSequence;

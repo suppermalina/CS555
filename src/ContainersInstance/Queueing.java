@@ -18,7 +18,7 @@ import Model.Task;
  *
  */
 public class Queueing extends Containers {
-	public final int capacity = 5;
+	public final int capacity = 50;
 	private boolean checkIdle;
 	private static int queueID = 1;
 	// Deuqe provides convenient methods to implement the FIFO principle
