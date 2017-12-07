@@ -28,12 +28,12 @@ public class Simulator {
 	public int totalCustomersBeingGenerated;
 	private Lock lock;
 
-	private Simulator() {
+	Simulator() {
 		System.out.println("Simulator ready");
 		lock = new ReentrantLock();
 	}
 
-	private ArrayList<Double> plotExistCDFX;
+	/*private ArrayList<Double> plotExistCDFX;
 	private ArrayList<Integer> plotExistCDFY;
 	private ArrayList<Double> plotServiceCDFX;
 	private ArrayList<Integer> plotServiceCDFY;
@@ -48,11 +48,15 @@ public class Simulator {
 	private ArrayList<Integer> plotServicePMFY;*/
 	protected ArrayList<ArrayList<Double>> XAxis;
 	protected ArrayList<ArrayList<Integer>> YAxis;
+	
+	protected ArrayList<Double> currentStateX;
+	protected ArrayList<Double> currentStateY;
+	protected ArrayList<ArrayList<Double>> pitcher;
 
 	protected void setUp() {
 		XAxis = new ArrayList<ArrayList<Double>>();
 		YAxis = new ArrayList<ArrayList<Integer>>();
-		plotExistCDFX = new ArrayList<Double>();
+		/*plotExistCDFX = new ArrayList<Double>();
 		plotExistCDFY = new ArrayList<Integer>();
 		plotServiceCDFX = new ArrayList<Double>();
 		plotServiceCDFY = new ArrayList<Integer>();
@@ -60,14 +64,17 @@ public class Simulator {
 		plotExistInQueX = new ArrayList<Double>();
 		plotExistInQueY = new ArrayList<Integer>();
 		plotInServiceX = new ArrayList<Double>();
-		plotInServiceY = new ArrayList<Integer>();
+		plotInServiceY = new ArrayList<Integer>();*/
+		
+		currentStateX = new ArrayList<Double>();
+		currentStateY = new ArrayList<Double>();
 		
 		/*plotExistPMFX = new ArrayList<Double>();
 		plotExistPMFY = new ArrayList<Integer>();
 		plotServicePMFX = new ArrayList<Double>();
 		plotServicePMFY = new ArrayList<Integer>();*/
 
-		plotExistCDFX.add(0, 0.0);
+		/*plotExistCDFX.add(0, 0.0);
 		plotExistInQueX.add(0, 1.0);
 		plotServiceCDFX.add(0, 2.0);
 		plotInServiceX.add(0, 3.0);
@@ -75,21 +82,22 @@ public class Simulator {
 		plotExistCDFY.add(0, 0);
 		plotExistInQueY.add(0, 1);
 		plotServiceCDFY.add(0, 2);
-		plotInServiceY.add(0, 3);
+		plotInServiceY.add(0, 3);*/
 
-		XAxis.add(0, plotExistCDFX);
+		/*XAxis.add(0, plotExistCDFX);
 		XAxis.add(1, plotExistInQueX);
 		XAxis.add(2, plotServiceCDFX);
-		XAxis.add(3, plotInServiceX);
+		XAxis.add(3, plotInServiceX);*/
 		//XAxis.add(1, plotExistPMFX);
 		//XAxis.add(3, plotServicePMFX);
-		YAxis.add(0, plotExistCDFY);
+		/*YAxis.add(0, plotExistCDFY);
 		YAxis.add(1, plotExistInQueY);
 		YAxis.add(2, plotServiceCDFY);
-		YAxis.add(3, plotInServiceY);
-		server = Servers.getInstance();
-		queue = Queueing.getInstance();
+		YAxis.add(3, plotInServiceY);*/
+		server = new Servers();
+		queue = new Queueing();
 		totalCustomersBeingGenerated = 1;
+		pitcher = new ArrayList<ArrayList<Double>>();
 	}
 	//int counter = 0;
 	private int lastForExist = 0;
@@ -138,6 +146,25 @@ public class Simulator {
 		map.put(set, totalCustomersBeingGenerated);
 		return map;
 	}
+	
+	// This is for plot the average number of customers in a system at each observation
+	protected void plotState(long inputTime) {
+		double time = inputTime / 1000000000.0;
+		System.out.println(time);
+		this.currentStateX.add(time);
+		System.out.println(this.currentState());
+		this.currentStateY.add((double)(this.currentState()));
+	}
+	
+	protected ArrayList<ArrayList<Double>> sendData() {
+		pitcher.add(currentStateX);
+		pitcher.add(currentStateY);
+		if(pitcher == null) {
+			System.out.println("PITCHER IS DAMN NULL");
+			System.exit(-1);
+		}
+		return pitcher;
+	}
 
 	private static Simulator instance = null;
 
@@ -184,7 +211,7 @@ public class Simulator {
 		if (t != null) {
 			totalCustomersBeingGenerated++;
 			Customer newCust = (Customer) Generator.getTask("customer");
-			Controller.reporter.generatingLog(newCust.toString() + " was generated at: " + StatisticalClock.CLOCK()
+			Controller.reporter.generatingLog(newCust.toString() + " was generated at: " + Controller.clock.CLOCK()
 					+ ", involked by " + t.getTyp() + t.getId());
 			queue.takeTaskIn(newCust);
 		}

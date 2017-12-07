@@ -18,7 +18,6 @@ import EventsInstances.GenerateCustomer;
 import EventsInstances.PopCustomerOut;
 import Model.*;
 
-
 public class Controller {
 	// These two variables used be a part of GenerateCustomer and PopCustomerOut
 	// accordingly
@@ -29,7 +28,7 @@ public class Controller {
 	private double lambda = 0.5;
 	private long endingTime = 10000;
 	public static Deque<Task> localLogRecorder;
-	public static boolean flag = false;
+	public static boolean flag = true;
 	public static Set<Timer> timerPool;
 	private Lock timerLock;
 
@@ -39,14 +38,15 @@ public class Controller {
 	public static StatisticalCounter counter;
 	public static ReportGenerator reporter;
 	public static long initialTime;
-	protected static long samplePoint = 1000000;
+	protected static long samplePoint = 50000000;
 	private static long recordPoint = 100;
 	protected Deque<Long> timeRecorder;
-
+	public static StatisticalClock clock;
 	public static Timer monitor;
 	private Lock lock;
+	public static Simulator simulator;
 
-	private Controller() {
+	Controller() {
 		System.out.println("Controller ready");
 	}
 
@@ -60,6 +60,7 @@ public class Controller {
 		timerLock = new ReentrantLock();
 		timeRecorder = new LinkedList<Long>();
 		lock = new ReentrantLock();
+		simulator = new Simulator();
 	}
 
 	private static Controller instance = null;;
@@ -71,45 +72,41 @@ public class Controller {
 		return instance;
 	}
 
-	protected static Simulator simulator = Simulator.getInstance();
-
 	// private Map<Integer, Task> timerPool = new HashMap<Integer, Task>();
 
 	public synchronized void addTask(Task t) {
 		tasks.takeTaskIn(t);
 		// timerPool.put(t.getId(), t);
 	}
-	
-	/*int testCount;
-	protected void dataForPloting(long inputTime) {
-		reporter.writeRepor("This is the " + ++testCount + "th time executing dataForPloting at: " + inputTime / 1000000.0);
-		
-		
-	}*/
+
+	/*
+	 * int testCount; protected void dataForPloting(long inputTime) {
+	 * reporter.writeRepor("This is the " + ++testCount +
+	 * "th time executing dataForPloting at: " + inputTime / 1000000.0);
+	 * 
+	 * 
+	 * }
+	 */
 
 	private boolean signals() {
 		System.out.println("signals() was started at: " + initialTime);
 		int counter = 0;
-		while (StatisticalClock.CLOCK() <= endingTime) {
-			long time = StatisticalClock.NANOCLOCK();
-			long nanoPoint = TimeUnit.NANOSECONDS.toNanos(samplePoint);
+		while (clock.CLOCK() <= endingTime) {
+			long time = clock.NANOCLOCK();
+			long nanoPoint = TimeUnit.NANOSECONDS.toNanos(5000);
 			if (time % nanoPoint == 0) {
 
-				/*
-				 * reporter.writeRepor(
-				 * "--------------------------------------------------------------------"
-				 * ); reporter.writeRepor("There are total " +
-				 * simulator.currentState() + " customers in the system at: " +
-				 * StatisticalClock.CLOCK()); reporter.writeRepor(
-				 * "--------------------------------------------------------------------"
-				 * );
-				 */
+				//reporter.writeRepor("--------------------------------------------------------------------");
+				//reporter.writeRepor("There are total " + simulator.currentState() + " customers in the system at: "
+					//	+ clock.CLOCK());
+				//reporter.writeRepor("--------------------------------------------------------------------");
 
-				simulator.dataForPloting(time);
-				//time = -1;
+				simulator.plotState(time);
+				// simulator.dataForPloting(time);
+				// time = -1;
 
 			}
-			
+
 			if (initialTime == 0 || flag == true) {
 				// predictTime here is used for generating the coming new
 				// customer
@@ -117,7 +114,7 @@ public class Controller {
 				// The task should be sent to the tasklist
 				GenerateCustomer tempGenerateSignal = (GenerateCustomer) Generator.getTask("generating");
 				tempGenerateSignal.setInterval(predictTime);
-				Controller.tasks.takeTaskIn(tempGenerateSignal);
+				tasks.takeTaskIn(tempGenerateSignal);
 
 				if (timerLock.tryLock()) {
 					try {
@@ -129,9 +126,11 @@ public class Controller {
 				}
 				initialTime = -1;
 				flag = false;
-				//reporter.writeRepor("This is the " + ++counter + "th time executing "
-					//	+ "the signal() method, flag is: " + flag + ", initialTime is: " + initialTime
-						//+ ". At time: " + StatisticalClock.CLOCK());
+				// reporter.writeRepor("This is the " + ++counter + "th time
+				// executing "
+				// + "the signal() method, flag is: " + flag + ", initialTime
+				// is: " + initialTime
+				// + ". At time: " + StatisticalClock.CLOCK());
 			}
 		}
 		monitor.cancel();
@@ -145,19 +144,23 @@ public class Controller {
 	}
 
 	public boolean start() {
-		initialTime = StatisticalClock.CLOCK();
 		setUp();
+		System.out.println("reset clock");
+		clock = new StatisticalClock();
+		initialTime = clock.CLOCK();
+		System.out.println(initialTime);
 		reporter.generateLogWriter();
 		simulator.setUp();
-		System.out.println("ok");
-		boolean starts = simulator.specialSituation_SystemFull();
 		simulator.modify();
-		reporter.writeRepor(
-				"Simulator starts at: " + StatisticalClock.CLOCK() + ", ending time is: " + this.endingTime);
-		boolean ok = false;
-		if (starts) {
-			ok = signals();
-		}
-		return ok;
+		// System.out.println("ok");
+		// boolean starts = simulator.specialSituation_SystemFull();
+		
+		// reporter.writeRepor(
+		// "Simulator starts at: " + StatisticalClock.CLOCK() + ", ending time
+		// is: " + this.endingTime);
+		// boolean ok = false;
+
+		return signals();
+
 	}
 }

@@ -2,9 +2,11 @@ package ExecutionalInstances;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -27,17 +29,79 @@ public class Statistist {
 	public static long averageSignalInitiatingTime;
 	private static Controller controller;
 	private static Map<Set<Customer>, Integer> rejectStat;
+	private static List<List<Integer>> catcher;
 	private static ArrayList<ArrayList<Double>> XAxis;
 	private static ArrayList<ArrayList<Integer>> YAxis;	
+	private static double[] xData;
+	private static double[] yData;
+	//private static ArrayList<ArrayList<Double>> getTime = new ArrayList<ArrayList<Double>>();
+	private static PriorityQueue<ArrayList<Double>>	minHeapCustomer = new PriorityQueue<ArrayList<Double>>(10, new Comparator<ArrayList<Double>>() {
+
+		@Override
+		public int compare(ArrayList<Double> listOne, ArrayList<Double> listTwo) {
+			// TODO Auto-generated method stub
+			if (listOne.size() > listTwo.size()) {
+				return -1;
+			} else if (listOne.size() < listTwo.size()) {
+				return 1;
+			} else return 0;
+		}
+	});
+	
+	private static PriorityQueue<ArrayList<Double>>	minHeapTime = new PriorityQueue<ArrayList<Double>>(10, new Comparator<ArrayList<Double>>() {
+
+		@Override
+		public int compare(ArrayList<Double> listOne, ArrayList<Double> listTwo) {
+			// TODO Auto-generated method stub
+			if (listOne.size() > listTwo.size()) {
+				return -1;
+			} else if (listOne.size() < listTwo.size()) {
+				return 1;
+			} else return 0;
+		}
+	});
+	
+	
+	// Due to the low accuracy of Java timer, each sequence may has a different size
+	// We will use the smallest size
+	private static void prepareDataForMean(ArrayList<ArrayList<Double>> pitcher) {
+		System.out.println(pitcher.size());
+		minHeapTime.offer(pitcher.get(0));
+		minHeapCustomer.offer(pitcher.get(1));
+		pitcher = null;
+	}
+	
+	private static void calculateMean() {
+		int commonSize = minHeapCustomer.peek().size();
+		int numberOfRuns = minHeapTime.size();
+		//testPrint(minHeap.peek(), getTime.get(0));
+		xData = new double[commonSize];
+		yData = new double[commonSize];
+		double base = (double)numberOfRuns;
+		while (!minHeapTime.isEmpty() && !minHeapCustomer.isEmpty()) {
+			ArrayList<Double> tempX = minHeapTime.poll();
+			ArrayList<Double> tempY = minHeapCustomer.poll();
+			int limit = tempX.size();
+			for (int i = 0; i < limit; i++) {
+				xData[i] += tempX.get(i) / base;
+				yData[i] += tempY.get(i) / base;
+			}
+		}
+		//testPrint(xData, yData);
+	}
+	
 
 	private static void startUp() {
-		controller = Controller.getInstance();
+		controller = new Controller();
 		boolean flag = controller.start();
 		System.out.println(flag);
-		if (flag) {
+		while (flag) {
 			controller.reporter.flushAll();
 			controller.reporter.closeAllLog();
+			flag = false;
 		}
+		System.out.println(flag);
+		prepareDataForMean(controller.simulator.sendData());
 	}
 
 	private static void getData() {
@@ -50,11 +114,25 @@ public class Statistist {
 		controller.systemShutDown();
 	}
 	
-	private static void testPrint(ArrayList xList, ArrayList yList) {
-		for (int i = 0; i < xList.size(); i++) {
-			System.out.println("X value: " + xList.get(i) + ", Y value: " + yList.get(i));
+	private static void testPrint(ArrayList<Double> one, ArrayList<Double> two) {
+		for (int i = 0; i < one.size(); i++) {
+			System.out.println("X value: " + one.get(i) + ", Y value: " + two.get(i));
 		}
-		System.out.println("This sequence has total: " + XAxis.get(0).size() + " data");
+		//System.out.println("This sequence has total: " + XAxis.get(0).size() + " data");
+	}
+	
+	private static void singlePlot() {
+		List<XYChart> charts = new ArrayList<XYChart>();
+		//xData = Controller.simulator.currentStateX;
+    	//yData = Controller.simulator.currentStateY;
+    	XYChart chart = new XYChartBuilder().xAxisTitle("Avg Sampling time").yAxisTitle("Avg Number of customers in the system").width(1200).height(800).build();
+	    chart.getStyler().setYAxisMax(10.0);
+	   	XYSeries series = chart.addSeries("State", xData, yData);
+	   	series.setMarker(SeriesMarkers.CIRCLE);
+	   	series.setMarkerColor(Color.RED);
+	   	series.setLineColor(Color.BLACK);
+    	series.setLineWidth(0.3f);
+    	new SwingWrapper<XYChart>(chart).displayChart();
 	}
 	
 	private static void plotting() {
@@ -96,12 +174,19 @@ public class Statistist {
 	    }
 	    new SwingWrapper<XYChart>(charts).displayChartMatrix();
 	 }
+	
+	
 
 	public static void main(String[] args) {
-		startUp();
-		getData();
+		for (int i = 0; i < 50; i++) {
+			startUp();
+		}
+		
+		
+		// getData();
 		//testPrint();
-		plotting();
+		calculateMean();
+		singlePlot();
 		//shutDown();
 		
 	}

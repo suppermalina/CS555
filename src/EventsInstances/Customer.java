@@ -26,7 +26,7 @@ public class Customer extends Task {
 	public Customer() {
 		this.type = "CUSTOMER";
 		this.id = customerID++;
-		this.initialTime = StatisticalClock.CLOCK();
+		this.initialTime = Controller.clock.CLOCK();
 		Controller.reporter.generatingLog(this.toString() + " was created at " + this.initialTime);
 	}
 
@@ -37,7 +37,7 @@ public class Customer extends Task {
 	}
 
 	public void setTerminalTime() {
-		this.terminalTime = StatisticalClock.CLOCK();
+		this.terminalTime = Controller.clock.CLOCK();
 	}
 
 	// This method is used to investigate the average time being spent
@@ -68,7 +68,7 @@ public class Customer extends Task {
 	}
 
 	public void setTimeEnteringServer() {
-		this.enterServer = StatisticalClock.CLOCK();
+		this.enterServer = Controller.clock.CLOCK();
 	}
 	public void getServerTrigger(Server s) {
 		System.out.println("temp hold by " + this.toString() + " takes " + s.toString());

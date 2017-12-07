@@ -18,18 +18,19 @@ import Model.Task;
  *
  */
 public class Queueing extends Containers {
-	public final int capacity = 50;
+	public final int capacity = 5;
 	private boolean checkIdle;
 	private static int queueID = 1;
 	// Deuqe provides convenient methods to implement the FIFO principle
-	private static Deque<Task> queue;
+	private  Deque<Task> queue;
 	private Controller contoller;
-	private static int counter = 0;
+	private int counter;
 	private static Queueing instance = null;
 	private Servers server = Servers.getInstance();
 	public Set<Customer> rejected;
 
 	public Queueing() {
+		counter = 0;
 		this.type = "QUEUE";
 		this.ID = queueID++;
 		rejected = new HashSet<Customer>();
@@ -55,7 +56,7 @@ public class Queueing extends Containers {
 		Customer tempCust = (Customer) e;
 		// System.out.println("Queue tries to accept " + e.toString() + " at: "
 		// + StatisticalClock.CLOCK());
-		Controller.reporter.queueLog("Queue tries to accept " + e.toString() + " at: " + StatisticalClock.CLOCK());
+		//Controller.reporter.queueLog("Queue tries to accept " + e.toString() + " at: " + Controller.clock.CLOCK());
 		if (this.isFull()) {
 			if (server.isIdle()) {
 				server.takeIntoServer();
@@ -63,16 +64,16 @@ public class Queueing extends Containers {
 					tempCust.setFlag();
 					queue.offerLast(tempCust);
 				}
-				Controller.reporter.queueLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+				//Controller.reporter.queueLog("Queue takes " + e.toString() + " at: " + Controller.clock.CLOCK());
 			} else {
-				Controller.reporter.queueLog(tempCust.toString() + " is rejected at: " + StatisticalClock.CLOCK());
+				//Controller.reporter.queueLog(tempCust.toString() + " is rejected at: " + Controller.clock.CLOCK());
 				rejected.add(tempCust);
 			}
 		} else {
 			tempCust.setFlag();
 			queue.offerLast(tempCust);
-			Controller.reporter.queueLog(queue.peekFirst().toString() + " on the head at: " + StatisticalClock.CLOCK());
-			Controller.reporter.queueLog("Queue takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+			//Controller.reporter.queueLog(queue.peekFirst().toString() + " on the head at: " + Controller.clock.CLOCK());
+			//Controller.reporter.queueLog("Queue takes " + e.toString() + " at: " +Controller.clock.CLOCK());
 		}
 
 	}

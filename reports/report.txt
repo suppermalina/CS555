@@ -1,0 +1,3 @@
+******************************Earily bird is waiting in the server**********************************
+******************************Earily bird is waiting in the server**********************************
+Simulator starts at: 211, ending time is: 10000

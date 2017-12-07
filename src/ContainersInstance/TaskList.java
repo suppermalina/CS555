@@ -60,7 +60,7 @@ public class TaskList extends Containers {
 	public  void takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
 		//System.out.println("The " + counter++ + "th " + e.getTyp() + " task into tasklist");
-		Controller.reporter.writeLog(this.toString() + " takes such an information: " + e.toString());
+		//Controller.reporter.writeLog(this.toString() + " takes such an information: " + e.toString());
 		tasklist.offer(e);
 	}
 

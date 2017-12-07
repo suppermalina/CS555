@@ -33,7 +33,7 @@ public class Server extends Containers {
 	private long delay;
 	private static Integer serverID = 1;
 	private List<Task> server;
-	private double miu = 0.5;
+	private double miu = 1;
 
 	// private static TriggerBuilder tirgger = null;
 	private static long index = 1;
@@ -80,8 +80,8 @@ public class Server extends Containers {
 			// TODO Auto-generated method stub
 			Customer temp = (Customer) e;
 			boolean cheating = noCheating(signal);
-			Controller.reporter.serverLog(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
-			System.out.println(this.toString() + " takes " + e.toString() + " at: " + StatisticalClock.CLOCK());
+			Controller.reporter.serverLog(this.toString() + " takes " + e.toString() + " at: " + Controller.clock.CLOCK());
+			System.out.println(this.toString() + " takes " + e.toString() + " at: " + Controller.clock.CLOCK());
 			System.out.println(this.toString());
 			temp.getServerTrigger(this);
 			server.add(temp);
@@ -89,8 +89,8 @@ public class Server extends Containers {
 			// poping signal
 			// task should be generated immediately
 			long predictiTime = (long) (RandomNumberGenerator.getInstance(miu) * 1000);
-			Controller.reporter.serverLog(this.toString() + " assigns " + e.toString() + " predictied service time: "
-					+ StatisticalClock.CLOCK());
+			//Controller.reporter.serverLog(this.toString() + " assigns " + e.toString() + " predictied service time: "
+				//	+ Controller.clock.CLOCK());
 
 			long makeUpForCheating = 0;
 			if (cheating) {
@@ -105,16 +105,16 @@ public class Server extends Containers {
 			tempPop.setInterval(predictiTime);
 			Controller.tasks.takeTaskIn(tempPop);
 			if (cheating) {
-				Controller.reporter.writeRepor(
-						"******************************Earily bird is waiting in the server**********************************");
+				//Controller.reporter.writeRepor(
+					//	"******************************Earily bird is waiting in the server**********************************");
 			}
-			Controller.reporter.serverLog(
-					"******************************cheating in " + this.toString() + " is " + cheating + "**********************************");
+			//Controller.reporter.serverLog(
+				//	"******************************cheating in " + this.toString() + " is " + cheating + "**********************************");
 			tempPop.getServerID(this.ID);
 			
 			if (timerLock.tryLock()) {
 				try {
-					Controller.monitor.schedule(tempPop, makeUpForCheating + predictiTime);
+					//Controller.monitor.schedule(tempPop, makeUpForCheating + predictiTime);
 				} finally {
 					timerLock.unlock();
 				}
@@ -129,9 +129,9 @@ public class Server extends Containers {
 	public Task popTaskOut() {
 		// TODO Auto-generated method stub
 		Task t = server.remove(0);
-		Controller.reporter.popingLog(
-				this.toString() + " popps " + t.toString() + " at: " + StatisticalClock.CLOCK());
-		Controller.counter.takeTaskIn(t);
+		//Controller.reporter.popingLog(
+		//		this.toString() + " popps " + t.toString() + " at: " + Controller.clock.CLOCK());
+		//Controller.counter.takeTaskIn(t);
 		Servers.takeIntoServer();
 		return t;
 	}

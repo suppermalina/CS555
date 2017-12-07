@@ -30,7 +30,7 @@ public class PopCustomerOut extends Task {
 		// synchronized, so all signal tasks share the same instance
 		this.type = "poping";
 		this.id = popCounter++;
-		this.initialTime = StatisticalClock.CLOCK();
+		this.initialTime = Controller.clock.CLOCK();
 		Controller.tasks.takeTaskIn(this);
 	}
 

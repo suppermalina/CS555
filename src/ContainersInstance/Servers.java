@@ -45,10 +45,10 @@ public class Servers {
 					customerInServers++;
 					if (one.isIdle() && two.isIdle()) {
 						Task temp = queue.popTaskOut();
-						System.out.println("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
+						System.out.println("Servers are all idle " + " at: " + Controller.clock.CLOCK() + 
 								" " + temp.toString() + " DIRECT!!!!!!!!");
-						Controller.reporter.serverLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
-								" " + temp.toString() + " DIRECT!!!!!!!!");
+						//Controller.reporter.serverLog("Servers are all idle " + " at: " + Controller.clock.CLOCK() + 
+							//	" " + temp.toString() + " DIRECT!!!!!!!!");
 						double random = Math.random();
 						if (random <= 0.5) {
 							one.takeTaskIn(temp);
@@ -57,17 +57,17 @@ public class Servers {
 						}
 					} else if (one.isIdle()) {
 						Task temp = queue.popTaskOut();
-						Controller.reporter.serverLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
-								" " + temp.toString() + " DIRECT!!!!!!!!");
-						System.out.println("Server one is idle " + " at: " + StatisticalClock.CLOCK() + 
+						//Controller.reporter.serverLog("Servers are all idle " + " at: " + Controller.clock.CLOCK() + 
+							//	" " + temp.toString() + " DIRECT!!!!!!!!");
+						System.out.println("Server one is idle " + " at: " + Controller.clock.CLOCK() + 
 								" " + temp.toString() + " DIRECT!!!!!!!!");
 						one.takeTaskIn(temp);
 					} else if (two.isIdle()) {
 						Task temp = queue.popTaskOut();
-						Controller.reporter.serverLog("Servers are all idle " + " at: " + StatisticalClock.CLOCK() + 
-								" " + temp.toString() + " DIRECT!!!!!!!!");
-						System.out.println("Server two is idle " + " at: " + StatisticalClock.CLOCK() + 
-								" " + temp.toString() + " DIRECT!!!!!!!!");
+						//Controller.reporter.serverLog("Servers are all idle " + " at: " + Controller.clock.CLOCK() + 
+							//	" " + temp.toString() + " DIRECT!!!!!!!!");
+						//System.out.println("Server two is idle " + " at: " + Controller.clock.CLOCK() + 
+							//	" " + temp.toString() + " DIRECT!!!!!!!!");
 						two.takeTaskIn(temp);
 					}
 				}

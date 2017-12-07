@@ -24,7 +24,7 @@ import Model.Task;
 public class GenerateCustomer extends Task {
 	// This is used to mark this object is the ith specific task being generated
 	private static int generateCustomerID = 1;
-	private Simulator access = Simulator.getInstance();
+	// private Simulator access = Simulator.getInstance();
 
 
 	public void setInterval(long interval) {
@@ -43,7 +43,7 @@ public class GenerateCustomer extends Task {
 		// A instanced controller here is a registered observer
 		// Due to the controller class is a final class and the instance is
 		// synchronized, so all signal tasks share the same instance
-		this.initialTime = StatisticalClock.CLOCK();
+		this.initialTime = Controller.clock.CLOCK();
 		this.type = "generating";
 		this.id = generateCustomerID++;
 	}
@@ -61,7 +61,7 @@ public class GenerateCustomer extends Task {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		access.generateNewCustomer(this);
+		Controller.simulator.generateNewCustomer(this);
 		setFlag();
 	}
 
