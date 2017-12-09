@@ -14,7 +14,7 @@ public final class RandomNumberGenerator {
     
     public synchronized static double getInstance(double avgRate) {
     	double seed = Math.random() * 5;
-		ENGINE.eval("set.seed(" + seed + ")");
+		ENGINE.eval("set.seed(" + 1 + ")");
 		double base = ENGINE.eval("runif(1)").asDouble();
 		double result = -avgRate * Math.log(base);
 	    return result;

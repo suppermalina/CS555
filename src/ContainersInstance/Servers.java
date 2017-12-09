@@ -6,7 +6,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import EventsInstances.Customer;
 import EventsInstances.PopCustomerOut;
 import ExecutionalInstances.Controller;
-import ExecutionalInstances.Generator;
 import ExecutionalInstances.RandomNumberGenerator;
 import ExecutionalInstances.StatisticalClock;
 import Model.Task;
@@ -25,8 +24,8 @@ public class Servers {
 		customerInServers = 0;
 		servers = new Server[2];
 		lock = new ReentrantLock();
-		one = (Server) Generator.getContainer("server");
-		two = (Server) Generator.getContainer("server");
+		one = new Server(1);
+		two = new Server(2);
 		servers[0] = one;
 		servers[1] = two;
 	}

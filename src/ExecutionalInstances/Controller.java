@@ -10,10 +10,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.*;
 
+import ContainersInstance.ModelSystem;
 import ContainersInstance.Server;
-import ContainersInstance.StateList;
-import ContainersInstance.StatisticalCounter;
-import ContainersInstance.TaskList;
 import EventsInstances.GenerateCustomer;
 import EventsInstances.PopCustomerOut;
 import Model.*;
@@ -26,41 +24,33 @@ public class Controller {
 	// The average arriving rate
 	// The service rate
 	private double lambda = 0.5;
-	private long endingTime = 10000;
-	public static Deque<Task> localLogRecorder;
+	public static double endingTime = 50000.0;
+	public static double period = 1000.0;
+	
+	// This flag is used to inform the GenerateCustomer
 	public static boolean flag = true;
-	public static Set<Timer> timerPool;
 	private Lock timerLock;
 
 	// These two lists were in the Simulator class
-	public static StateList log;
-	public static TaskList tasks;
-	public static StatisticalCounter counter;
 	public static ReportGenerator reporter;
 	public static long initialTime;
-	protected static long samplePoint = 50000000;
-	private static long recordPoint = 100;
-	protected Deque<Long> timeRecorder;
 	public static StatisticalClock clock;
 	public static Timer monitor;
 	private Lock lock;
-	public static Simulator simulator;
+	public static ModelSystem model;
+	// public static Simulator simulator;
 
 	Controller() {
 		System.out.println("Controller ready");
 	}
 
 	private void setUp() {
-		counter = (StatisticalCounter) Generator.getContainer("counter");
-		log = (StateList) Generator.getContainer("statelist");
-		tasks = (TaskList) Generator.getContainer("tasklist");
 		reporter = new ReportGenerator();
 		monitor = new Timer();
-		timerPool = new HashSet<Timer>();
 		timerLock = new ReentrantLock();
-		timeRecorder = new LinkedList<Long>();
 		lock = new ReentrantLock();
-		simulator = new Simulator();
+		model = new ModelSystem();
+		// simulator = new Simulator();
 	}
 
 	private static Controller instance = null;;
@@ -70,13 +60,6 @@ public class Controller {
 			instance = new Controller();
 		}
 		return instance;
-	}
-
-	// private Map<Integer, Task> timerPool = new HashMap<Integer, Task>();
-
-	public synchronized void addTask(Task t) {
-		tasks.takeTaskIn(t);
-		// timerPool.put(t.getId(), t);
 	}
 
 	/*
@@ -90,11 +73,11 @@ public class Controller {
 
 	private boolean signals() {
 		System.out.println("signals() was started at: " + initialTime);
-		int counter = 0;
+		// int counter = 0;
 		while (clock.CLOCK() <= endingTime) {
-			long time = clock.NANOCLOCK();
-			long nanoPoint = TimeUnit.NANOSECONDS.toNanos(5000);
-			if (time % nanoPoint == 0) {
+			// long time = clock.NANOCLOCK();
+			// long nanoPoint = TimeUnit.NANOSECONDS.toNanos(5000);
+			/*if (time % nanoPoint == 0) {
 
 				//reporter.writeRepor("--------------------------------------------------------------------");
 				//reporter.writeRepor("There are total " + simulator.currentState() + " customers in the system at: "
@@ -105,16 +88,15 @@ public class Controller {
 				// simulator.dataForPloting(time);
 				// time = -1;
 
-			}
+			}*/
 
 			if (initialTime == 0 || flag == true) {
 				// predictTime here is used for generating the coming new
 				// customer
 				long predictTime = (long) (RandomNumberGenerator.getInstance(lambda) * 1000);
 				// The task should be sent to the tasklist
-				GenerateCustomer tempGenerateSignal = (GenerateCustomer) Generator.getTask("generating");
+				GenerateCustomer tempGenerateSignal = new GenerateCustomer();
 				tempGenerateSignal.setInterval(predictTime);
-				tasks.takeTaskIn(tempGenerateSignal);
 
 				if (timerLock.tryLock()) {
 					try {
@@ -150,8 +132,7 @@ public class Controller {
 		initialTime = clock.CLOCK();
 		System.out.println(initialTime);
 		reporter.generateLogWriter();
-		simulator.setUp();
-		simulator.modify();
+		model.modify();
 		// System.out.println("ok");
 		// boolean starts = simulator.specialSituation_SystemFull();
 		
@@ -159,7 +140,7 @@ public class Controller {
 		// "Simulator starts at: " + StatisticalClock.CLOCK() + ", ending time
 		// is: " + this.endingTime);
 		// boolean ok = false;
-
+		model.setTimeTask();
 		return signals();
 
 	}

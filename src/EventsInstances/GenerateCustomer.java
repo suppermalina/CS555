@@ -12,9 +12,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import ExecutionalInstances.Controller;
 import ExecutionalInstances.RandomNumberGenerator;
-import ExecutionalInstances.Simulator;
 import ExecutionalInstances.StatisticalClock;
-import Model.Observed;
 import Model.Task;
 
 /**
@@ -61,7 +59,7 @@ public class GenerateCustomer extends Task {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		Controller.simulator.generateNewCustomer(this);
+		Controller.model.generateNewCustomer(this);
 		setFlag();
 	}
 

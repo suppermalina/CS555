@@ -17,7 +17,6 @@ public class Customer extends Task {
 	private boolean flag;
 	private static int customerID = 1;
 	private long enterServer;
-	public boolean trigger;
 	private Server temp = null;
 	/**
 	 * @param type
@@ -35,6 +34,10 @@ public class Customer extends Task {
 	public void setFlag() {
 		flag = true;
 	}
+	
+	public void timeEnterServer() {
+		this.enterServer = Controller.clock.CLOCK();
+	}
 
 	public void setTerminalTime() {
 		this.terminalTime = Controller.clock.CLOCK();
@@ -42,8 +45,12 @@ public class Customer extends Task {
 
 	// This method is used to investigate the average time being spent
 	// in the system by each accepted customer
-	public long timInSystem() {
-		return this.terminalTime - this.initialTime;
+	public long timeInSystem() {
+		if (flag) {
+			return this.terminalTime - this.initialTime;
+		} else {
+			return 0;
+		}
 	}
 
 	// This method is used to investigate the average service time being spent
@@ -81,6 +88,7 @@ public class Customer extends Task {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		setTerminalTime();
+		temp.popTaskOut();
 	}
 }

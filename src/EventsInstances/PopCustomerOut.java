@@ -11,7 +11,6 @@ import ContainersInstance.Servers;
 import ExecutionalInstances.Controller;
 import ExecutionalInstances.RandomNumberGenerator;
 import ExecutionalInstances.StatisticalClock;
-import Model.Observed;
 import Model.Task;
 
 /**
@@ -31,7 +30,7 @@ public class PopCustomerOut extends Task {
 		this.type = "poping";
 		this.id = popCounter++;
 		this.initialTime = Controller.clock.CLOCK();
-		Controller.tasks.takeTaskIn(this);
+		// Controller.tasks.takeTaskIn(this);
 	}
 
 	public void setInterval(long interval) {
@@ -60,7 +59,7 @@ public class PopCustomerOut extends Task {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		Servers.servers[serverGoingToFire - 1].popTaskOut();
+		//Servers.servers[serverGoingToFire - 1].popTaskOut();
 	}
 
 }

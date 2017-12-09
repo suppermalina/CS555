@@ -21,19 +21,13 @@ public class Queueing extends Containers {
 	public final int capacity = 5;
 	private boolean checkIdle;
 	private static int queueID = 1;
-	// Deuqe provides convenient methods to implement the FIFO principle
 	private  Deque<Task> queue;
-	private Controller contoller;
-	private int counter;
 	private static Queueing instance = null;
 	private Servers server = Servers.getInstance();
-	public Set<Customer> rejected;
 
 	public Queueing() {
-		counter = 0;
 		this.type = "QUEUE";
 		this.ID = queueID++;
-		rejected = new HashSet<Customer>();
 		queue = new LinkedList<Task>();
 		System.out.println("Queue is ready");
 	}
@@ -51,7 +45,7 @@ public class Queueing extends Containers {
 	 * @see Model.Containers#takeTaskIn(Model.Task)
 	 */
 	@Override
-	public void takeTaskIn(Task e) {
+	public boolean takeTaskIn(Task e) {
 		// TODO Auto-generated method stub
 		Customer tempCust = (Customer) e;
 		// System.out.println("Queue tries to accept " + e.toString() + " at: "
@@ -64,18 +58,18 @@ public class Queueing extends Containers {
 					tempCust.setFlag();
 					queue.offerLast(tempCust);
 				}
+				return true;
 				//Controller.reporter.queueLog("Queue takes " + e.toString() + " at: " + Controller.clock.CLOCK());
 			} else {
 				//Controller.reporter.queueLog(tempCust.toString() + " is rejected at: " + Controller.clock.CLOCK());
-				rejected.add(tempCust);
+				return false;
 			}
 		} else {
 			tempCust.setFlag();
 			queue.offerLast(tempCust);
-			//Controller.reporter.queueLog(queue.peekFirst().toString() + " on the head at: " + Controller.clock.CLOCK());
-			//Controller.reporter.queueLog("Queue takes " + e.toString() + " at: " +Controller.clock.CLOCK());
+			return true;
 		}
-
+		
 	}
 
 	/*

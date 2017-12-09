@@ -20,7 +20,7 @@ public class TestTimerTask extends TimerTask {
 	public void run() {
 		// TODO Auto-generated method stub
 		System.out.println("It's your term!");
-		System.out.println(Controller.clock.CLOCK() / 1000.0);
+		System.out.println(System.currentTimeMillis() / 1000.0);
 	}
 
 }

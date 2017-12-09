@@ -1,9 +1,13 @@
 package ExecutionalInstances;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -17,12 +21,18 @@ import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
-import ContainersInstance.StateList;
-import ContainersInstance.TaskList;
+import com.panayotis.gnuplot.JavaPlot;
+import com.panayotis.gnuplot.plot.DataSetPlot;
+import com.panayotis.gnuplot.style.NamedPlotColor;
+import com.panayotis.gnuplot.style.PlotColor;
+import com.panayotis.gnuplot.style.PlotStyle;
+import com.panayotis.gnuplot.style.RgbPlotColor;
+import com.panayotis.gnuplot.style.Style;
+
 import EventsInstances.Customer;
 import EventsInstances.GenerateCustomer;
 import EventsInstances.PopCustomerOut;
-import Model.SystemState;
+import Model.Information;
 import Model.Task;
 
 public class Statistist {
@@ -31,68 +41,39 @@ public class Statistist {
 	private static Map<Set<Customer>, Integer> rejectStat;
 	private static List<List<Integer>> catcher;
 	private static ArrayList<ArrayList<Double>> XAxis;
-	private static ArrayList<ArrayList<Integer>> YAxis;	
-	private static double[] xData;
-	private static double[] yData;
-	//private static ArrayList<ArrayList<Double>> getTime = new ArrayList<ArrayList<Double>>();
-	private static PriorityQueue<ArrayList<Double>>	minHeapCustomer = new PriorityQueue<ArrayList<Double>>(10, new Comparator<ArrayList<Double>>() {
+	private static ArrayList<ArrayList<Integer>> YAxis;
+	private double[][] systemGNU;
+	private double[][] queueGNU;
+	private double[][]serverGNU;
+	private double[][] rejectedGNU;
+	private Deque<double[][]> information;
+	private Deque<Deque<Information>> allInform;
+	private Deque<Information> systemInform;
+	private Deque<Information> queueInform;
+	private Deque<Information> serverInform;
+	private Deque<Information> rejectedInform;
+	private double runTimes;
+	private double[][] dataForGNU;
+	private int arraySize = (int) (Controller.endingTime / Controller.period) - 1;
+	private final String pathToGNU = "/usr/local/bin/gnuplot";
+	private ArrayList<String> yLabel;
+	private RgbPlotColor color;
 
-		@Override
-		public int compare(ArrayList<Double> listOne, ArrayList<Double> listTwo) {
-			// TODO Auto-generated method stub
-			if (listOne.size() > listTwo.size()) {
-				return -1;
-			} else if (listOne.size() < listTwo.size()) {
-				return 1;
-			} else return 0;
-		}
-	});
-	
-	private static PriorityQueue<ArrayList<Double>>	minHeapTime = new PriorityQueue<ArrayList<Double>>(10, new Comparator<ArrayList<Double>>() {
-
-		@Override
-		public int compare(ArrayList<Double> listOne, ArrayList<Double> listTwo) {
-			// TODO Auto-generated method stub
-			if (listOne.size() > listTwo.size()) {
-				return -1;
-			} else if (listOne.size() < listTwo.size()) {
-				return 1;
-			} else return 0;
-		}
-	});
-	
-	
-	// Due to the low accuracy of Java timer, each sequence may has a different size
-	// We will use the smallest size
-	private static void prepareDataForMean(ArrayList<ArrayList<Double>> pitcher) {
-		System.out.println(pitcher.size());
-		minHeapTime.offer(pitcher.get(0));
-		minHeapCustomer.offer(pitcher.get(1));
-		pitcher = null;
+	private void setUpArrays() {
+		information = new LinkedList<double[][]>();
+		information.offerLast(systemGNU = new double[arraySize][2]);
+		information.offerLast(queueGNU = new double[arraySize][2]);
+		information.offerLast(serverGNU = new double[arraySize][2]);
+		information.offerLast(rejectedGNU = new double[arraySize][2]);
+		yLabel = new ArrayList<String>();
+		yLabel.add("SystemState");
+		yLabel.add("ServerState");
+		yLabel.add("QueueState");
+		yLabel.add("RejectedState");
 	}
-	
-	private static void calculateMean() {
-		int commonSize = minHeapCustomer.peek().size();
-		int numberOfRuns = minHeapTime.size();
-		//testPrint(minHeap.peek(), getTime.get(0));
-		xData = new double[commonSize];
-		yData = new double[commonSize];
-		double base = (double)numberOfRuns;
-		while (!minHeapTime.isEmpty() && !minHeapCustomer.isEmpty()) {
-			ArrayList<Double> tempX = minHeapTime.poll();
-			ArrayList<Double> tempY = minHeapCustomer.poll();
-			int limit = tempX.size();
-			for (int i = 0; i < limit; i++) {
-				xData[i] += tempX.get(i) / base;
-				yData[i] += tempY.get(i) / base;
-			}
-		}
-		//testPrint(xData, yData);
-	}
-	
 
-	private static void startUp() {
-		controller = new Controller();
+	private void startUp() {
+		controller = Controller.getInstance();
 		boolean flag = controller.start();
 		System.out.println(flag);
 		while (flag) {
@@ -101,93 +82,129 @@ public class Statistist {
 			flag = false;
 		}
 		System.out.println(flag);
-		prepareDataForMean(controller.simulator.sendData());
-	}
-
-	private static void getData() {
-		rejectStat = controller.simulator.rejectStatData();
-		XAxis = controller.simulator.XAxis;
-		YAxis = controller.simulator.YAxis;
-	}
-
-	private static void shutDown() {
-		controller.systemShutDown();
+		Deque<Deque<Information>> temp = Controller.model.pitcher();
+		Deque<Information> test = temp.pollFirst();
+		/*while (!test.isEmpty()) {
+			Information infor = test.pollFirst();
+			System.out.println(infor.getAverageTime());
+			System.out.println(infor.getTime());
+		}*/
+		fetchData(controller.model.pitcher());
 	}
 	
-	private static void testPrint(ArrayList<Double> one, ArrayList<Double> two) {
-		for (int i = 0; i < one.size(); i++) {
-			System.out.println("X value: " + one.get(i) + ", Y value: " + two.get(i));
+	/*private void prepareDataForMean(Deque<Deque<Information>> pitcher) {
+		System.out.println(pitcher.size());
+		while(!pitcher.isEmpty()) {
+			systemInform = pitcher.pollFirst();
+			allInform.add(systemInform);
+			queueInform = pitcher.pollFirst();
+			allInform.add(1, queueInform);
+			serverInform = pitcher.pollFirst();
+			allInform.add(2, serverInform);
+			rejectedInform = pitcher.pollFirst();
+			allInform.add(3, rejectedInform);
 		}
-		//System.out.println("This sequence has total: " + XAxis.get(0).size() + " data");
+		System.out.println(allInform.size());
+		fetchData();
+	}*/
+	
+	private void fetchData(Deque<Deque<Information>> pitcher) {
+		/*for (int i = 0; i < allInform.size(); i++) {
+			
+			Deque<Information> temp = allInform.get(i);
+			System.out.println(temp == null);
+			int index = 0;
+			while (!temp.isEmpty()) {
+				Information inform = temp.pollFirst();
+				double avgTime = inform.getAverageTime();
+				double timeStamp = inform.getTime();
+				dataForGNU[index][1] += avgTime / runTimes;
+				dataForGNU[index][0] += timeStamp / runTimes;
+				index++;
+			}
+		}*/
+		
+		while (!pitcher.isEmpty()) {
+			Deque<Information> temp = pitcher.pollFirst();
+			double[][] dataForGNU = information.pollFirst();
+			System.out.println(temp == null);
+			System.out.println(temp.isEmpty());
+			int index = 0;
+			while (!temp.isEmpty()) {
+				Information inform = temp.pollFirst();
+				double avgTime = inform.getAverageTime();
+				double timeStamp = inform.getTime();
+				dataForGNU[index][1] += avgTime / runTimes;
+				dataForGNU[index][0] += timeStamp / runTimes;
+				index++;
+			}
+			information.offerLast(dataForGNU);
+		}
 	}
 	
-	private static void singlePlot() {
-		List<XYChart> charts = new ArrayList<XYChart>();
-		//xData = Controller.simulator.currentStateX;
-    	//yData = Controller.simulator.currentStateY;
-    	XYChart chart = new XYChartBuilder().xAxisTitle("Avg Sampling time").yAxisTitle("Avg Number of customers in the system").width(1200).height(800).build();
-	    chart.getStyler().setYAxisMax(10.0);
-	   	XYSeries series = chart.addSeries("State", xData, yData);
-	   	series.setMarker(SeriesMarkers.CIRCLE);
-	   	series.setMarkerColor(Color.RED);
-	   	series.setLineColor(Color.BLACK);
-    	series.setLineWidth(0.3f);
-    	new SwingWrapper<XYChart>(chart).displayChart();
+	/*private void testInfor() {
+		
+		Deque<Information> temp = allInform.get(0);
+		//double[] tempX = information.get(0);
+		//double[] tempY = information.get(1);
+		int j = 0;
+		System.out.println(temp.isEmpty());
+		while (!temp.isEmpty()) {
+			Information inform = temp.pollFirst();
+			double avgTime = inform.getAverageTime();
+			double timeStamp = inform.getTime();
+			System.out.println("testx is " + avgTime + ", testy is " + timeStamp);
+			systemInformY[j] += avgTime / runTimes;
+			systemInformX[j] += timeStamp / runTimes;
+			j++;
+		}*/
+	
+	
+	private boolean plotting() {
+		JavaPlot plotter = null;
+		/*try {
+			plotter.setGNUPlotPath(pathToGNU);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		for (int i = 0; i < 4; i++) {
+			plotter = new JavaPlot(pathToGNU);
+			PlotStyle style = new PlotStyle();
+			style.set("terminal qt", "4");
+			style.setLineType(9);
+			dataForGNU = information.pollFirst();
+			for (int j = 0; j < dataForGNU.length; j++) {
+				for (int k = 0; k < dataForGNU[j].length; k++) {
+					System.out.print(dataForGNU[j][k] + " ");
+				}
+				System.out.println();
+			}
+			DataSetPlot pl = new DataSetPlot(dataForGNU);
+			color = new RgbPlotColor(10 * i, 20 * i, 30 * i);
+			plotter.setTitle(this.yLabel.get(i));
+			style.setPointSize(i);
+			style.setStyle(Style.LINESPOINTS);
+			style.setLineType(color);
+			pl.setPlotStyle(style);
+			plotter.addPlot(pl);
+			plotter.plot();
+		}
+		return true;
 	}
-	
-	private static void plotting() {
-		List<XYChart> charts = new ArrayList<XYChart>();
-		int matrixSize = XAxis.size();
-	    for (int i = 0; i < matrixSize; i++) {
-	    	ArrayList<Double> xData = XAxis.get(i);
-	    	ArrayList<Integer> yData = YAxis.get(i);
-	    	String xTitle = null;
-	    	String yTitle = null;
-	    	String nameOfSequence = null;
-	    	double xAxisInfor = xData.remove(0);
-	    	int yAxisInfor = yData.remove(0);
-	    	if (xAxisInfor == 0 && yAxisInfor == 0) {
-	    		xTitle = "Exist Customer CDF";
-	    		yTitle = "Exist Customer CDF";
-	    		nameOfSequence = "ExistCustomerCDF";
-	    	} else if (xAxisInfor == 1 && yAxisInfor == 1) {
-	    		xTitle = "Customer In Que";
-	    		yTitle = "Customer In Que";
-	    		nameOfSequence = "ExistCustomerInQue";
-	    	} else if (xAxisInfor == 2 && yAxisInfor == 2) {
-	    		xTitle = "Customer in service CDF";
-	    		yTitle = "Customer in service Customer CDF";
-	    		nameOfSequence = "ServiceCDF";
-	    	} else {
-	    		xTitle = "Customer in service";
-	    		yTitle = "Customer in service";
-	    		nameOfSequence = "Customers in Service";
-	    	}
-		    XYChart chart = new XYChartBuilder().xAxisTitle(xTitle).yAxisTitle(yTitle).width(600).height(400).build();
-		    chart.getStyler().setYAxisMax(60.0);
-		   	XYSeries series = chart.addSeries(nameOfSequence, xData, yData);
-		   	series.setMarker(SeriesMarkers.CIRCLE);
-		   	series.setMarkerColor(Color.RED);
-		   	series.setLineColor(Color.BLACK);
-	    	series.setLineWidth(0.3f);
-	    	charts.add(chart);
-	    }
-	    new SwingWrapper<XYChart>(charts).displayChartMatrix();
-	 }
-	
-	
 
 	public static void main(String[] args) {
-		for (int i = 0; i < 50; i++) {
-			startUp();
+		Statistist expert = new Statistist();
+		expert.runTimes = 10.0;
+		expert.allInform = new LinkedList<Deque<Information>>();
+		expert.setUpArrays();
+		
+		for (int i = 0; i < expert.runTimes; i++) {
+			expert.startUp();
 		}
-		
-		
-		// getData();
-		//testPrint();
-		calculateMean();
-		singlePlot();
-		//shutDown();
-		
+		boolean flag = expert.plotting();
+		if(flag) {
+			controller.systemShutDown();
+		}
 	}
 }
