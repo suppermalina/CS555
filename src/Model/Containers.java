@@ -12,18 +12,18 @@ import java.util.*;
  * class provided by Java. This superclass contains all common fields in
  * those instances mentioned previously.
  */
-public abstract class Containers {
+abstract class Containers {
 	protected Collection container;
 	protected String type;
 	protected int ID;
 	
-	public abstract boolean takeTaskIn(Task e);
-	public abstract Task popTaskOut();
-	public int getState() {
+	protected abstract boolean takeTaskIn(Task e);
+	protected abstract Task popTaskOut();
+	protected int getState() {
 		return container.size();
 	}
 	
-	public String getName() {
+	protected String getName() {
 		return type + ID;
 	}
 	
@@ -31,6 +31,6 @@ public abstract class Containers {
 		return type + ID;
 	}
 	
-	public abstract int getSize();
+	protected abstract int getSize();
 
 }

@@ -12,7 +12,7 @@ import java.util.TimerTask;
  * @author mali
  *
  */
-public abstract class Task extends TimerTask {
+abstract class Task extends TimerTask {
 	// This variable is set for those tasks will be send to the tasklist
 	protected static int idForTaskList = 1;
 	protected int id;
@@ -22,27 +22,27 @@ public abstract class Task extends TimerTask {
 	protected long interval;
 	protected TimerTask localTask;
 	
-	public int getId() {
+	protected int getId() {
 		return id;
 	}
-	public TimerTask getLocalTask() {
+	protected TimerTask getLocalTask() {
 		return localTask;
 	}
-	public String getTyp() {
+	protected String getTyp() {
 		return type;
 	}
 
-	public long getInitialTime() {
+	protected long getInitialTime() {
 		return this.initialTime;
 	}
-	public long getTerminalTime() {
+	protected long getTerminalTime() {
 		return this.terminalTime;
 	}
-	public long getInterval() {
+	protected long getInterval() {
 		return interval;
 	}
 	
-	public String getTimeInform() {
+	protected String getTimeInform() {
 		return this.toString() + " initialtime is: " + this.initialTime + ", interval is: " + this.interval + ", terminaltime is: " + this.terminalTime;
 	}
 	

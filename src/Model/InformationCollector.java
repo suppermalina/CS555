@@ -3,90 +3,138 @@
  */
 package Model;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.locks.*;
-
-import EventsInstances.Customer;
-import ExecutionalInstances.Controller;
 
 /**
  * @author mali
  *
  */
-public class InformationCollector extends TimerTask {
+class InformationCollector extends TimerTask {
 	private long[] systemContainer;
 	private long[] serverContainer;
 	private long[] queueContainer;
-	private long[] rejectedContainer;
-	private int counterForCustomerTookService;
+	private double[] rejectedContainer;
+	private double[] servicedContainer;
+
+	private int counterForCustomerServiced;
 	private int counterForCustomerRejected;
+
 	private double totalTime;
+
 	private Deque<Information> queueInformationLink;
 	private Deque<Information> serverInformationLink;
 	private Deque<Information> systemInformationLink;
-	private Deque<Information> rejectedInformationLink;
-	private Deque<Task> customerOutFromServer;
+	private Deque<Information> rejectedQuantityInformationLink;
+	private Deque<Information> servicedQuantityInformationLink;
+	private Deque<Information> rejectedRatioInformationLink;
+	private Deque<Information> servicedRatioInformationLink;
+	private Deque<Information> finalStatistic;
+
 	private Set<Task> customerRejected;
+	private Set<Task> customerServiced;
+
 	private Lock lock;
-	private int caliber;
 	private double samplingPeriod;
 	private boolean trigger = false;
 	private int endPoint = (int) (Controller.endingTime / Controller.period);
 
-	public InformationCollector() {
-		this.caliber = 0;
+	InformationCollector() {
 		this.totalTime = Controller.endingTime;
 		this.lock = new ReentrantLock();
+
 		this.systemContainer = new long[1];
 		this.serverContainer = new long[1];
 		this.queueContainer = new long[1];
-		this.rejectedContainer = new long[1];
-		this.counterForCustomerTookService = 0;
+		this.rejectedContainer = new double[1];
+		this.servicedContainer = new double[1];
+
+		this.counterForCustomerServiced = 0;
 		this.counterForCustomerRejected = 0;
+
 		this.systemInformationLink = new LinkedList<Information>();
 		this.serverInformationLink = new LinkedList<Information>();
 		this.queueInformationLink = new LinkedList<Information>();
-		this.rejectedInformationLink = new LinkedList<Information>();
-		this.customerOutFromServer = new LinkedList<Task>();
+		this.rejectedQuantityInformationLink = new LinkedList<Information>();
+		this.servicedQuantityInformationLink = new LinkedList<Information>();
+		this.rejectedRatioInformationLink = new LinkedList<Information>();
+		this.servicedRatioInformationLink = new LinkedList<Information>();
+
 		this.customerRejected = new HashSet<Task>();
+		this.customerServiced = new HashSet<Task>();
+
+		this.finalStatistic = new LinkedList<Information>();
 	}
 
-	public void setPeriod(double period) {
+	protected void setPeriod(double period) {
 		this.samplingPeriod = period;
 	}
 
-	public void takeServiceInformation(Task servicedCustomer) {
-		this.counterForCustomerTookService++;
+	protected void takeServiceInformation(Task servicedCustomer) {
 		Customer informationProvider = (Customer) servicedCustomer;
-		this.systemContainer[0] += informationProvider.timeInSystem();
-		this.queueContainer[0] += informationProvider.timeInQueue();
-		this.serverContainer[0] += informationProvider.timeInServer();
+		if (informationProvider.flag == true) {
+			this.counterForCustomerServiced++;
+			this.systemContainer[0] += informationProvider.timeInSystem();
+			this.queueContainer[0] += informationProvider.timeInQueue();
+			this.serverContainer[0] += informationProvider.timeInServer();
+			this.customerServiced.add(informationProvider);
+			this.servicedContainer[0] += this.counterForCustomerServiced;
+		}
 	}
 
-	public void takeRejcetedInformation(Task rejectedCustomer) {
-		System.out.println("REJECTED BY THE MODELSYSTEM");
-		this.counterForCustomerRejected++;
-		//Customer rejected = (Customer) rejectedCustomer;
-		//System.out.println(rejectedCustomer == null);
-		
-		this.customerRejected.add(rejectedCustomer);
-		this.rejectedContainer[0] += this.customerRejected.size();
+	protected void takeRejcetedInformation(Task rejectedCustomer) {
+		Customer informationProvider = (Customer) rejectedCustomer;
+		if (informationProvider.flag == false) {
+			this.counterForCustomerRejected++;
+			System.out.println("REJECTED BY THE MODELSYSTEM");
+			this.counterForCustomerRejected++;
+			this.customerRejected.add(rejectedCustomer);
+			this.rejectedContainer[0] += this.counterForCustomerRejected;
+		}
 	}
 
-	public Deque<Information> getSystemInform() {
+	protected Deque<Information> getSystemInform() {
 		return this.systemInformationLink;
 	}
 
-	public Deque<Information> getQueueInform() {
+	protected Deque<Information> getQueueInform() {
 		return this.queueInformationLink;
 	}
 
-	public Deque<Information> getServerInform() {
+	protected Deque<Information> getServerInform() {
 		return this.serverInformationLink;
 	}
 
-	public Deque<Information> getRejectedInform() {
-		return this.rejectedInformationLink;
+	protected Deque<Information> getRejectedQuantityInform() {
+		return this.rejectedQuantityInformationLink;
+	}
+
+	protected Deque<Information> getRejectedRatioInform() {
+		return this.rejectedRatioInformationLink;
+	}
+
+	protected Deque<Information> getServicedQuantityInform() {
+		return this.servicedQuantityInformationLink;
+	}
+
+	protected Deque<Information> getServicedRatioInform() {
+		return this.servicedRatioInformationLink;
+	}
+
+	protected Deque<Information> getFinalStatisticData() {
+		double totalServiced = this.customerServiced.size();
+		double totalRejected = this.customerRejected.size();
+		this.finalStatistic.offerLast(new Information(totalServiced, 1.0));
+		this.finalStatistic.offerLast(new Information(totalRejected, 2.0));
+		return this.finalStatistic;
+	}
+
+	protected double totalQuantity() {
+		return this.customerRejected.size() + this.customerServiced.size();
 	}
 
 	/*
@@ -106,27 +154,34 @@ public class InformationCollector extends TimerTask {
 					double avgTimeInSystem = ((double) systemContainer[0] / 1000.0);
 					double avgTimeInQueue = ((double) queueContainer[0] / 1000.0);
 					double avgTimeInServer = ((double) serverContainer[0] / 1000.0);
-					double avgTimeBeRejected = ((double) rejectedContainer[0]);
+					double periodServiced = servicedContainer[0];
+					double periodRejected = rejectedContainer[0];
+					
 					systemInformationLink.offerLast(new Information(avgTimeInSystem, timeStamp));
 					queueInformationLink.offerLast(new Information(avgTimeInQueue, timeStamp));
 					serverInformationLink.offerLast(new Information(avgTimeInServer, timeStamp));
-					rejectedInformationLink.offer(new Information(avgTimeBeRejected, timeStamp));
+
+					servicedQuantityInformationLink.offerLast(new Information(periodServiced, timeStamp));
+					rejectedQuantityInformationLink.offerLast(new Information(periodRejected, timeStamp));
+
 					systemContainer = new long[1];
 					queueContainer = new long[1];
 					serverContainer = new long[1];
-					rejectedContainer = new long[1];
+					rejectedContainer = new double[1];
+					servicedContainer = new double[1];
+					counterForCustomerRejected = 0;
+					counterForCustomerServiced = 0;
 					trigger = false;
 				} finally {
 					lock.unlock();
 				}
 			}
 		}
-		System.out.println("before run()" + trigger);
 		System.out.println(systemInformationLink.peekLast().getAverageTime());
 		System.out.println(queueInformationLink.peekLast().getAverageTime());
 		System.out.println(serverInformationLink.peekLast().getAverageTime());
-		System.out.println(rejectedInformationLink.peekLast().getAverageTime());
-
+		System.out.println(servicedQuantityInformationLink.peekLast().getAverageTime());
+		System.out.println(rejectedQuantityInformationLink.peekLast().getAverageTime());
 	}
 
 }

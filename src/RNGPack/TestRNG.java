@@ -5,11 +5,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 
-import org.knowm.xchart.SwingWrapper;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.style.markers.SeriesMarkers;
 /**
  * @author mali
  * This class contains main function. 
@@ -182,7 +177,7 @@ public class TestRNG {
 		}
 	}
 	
-	private void plotting() {
+	/*private void plotting() {
 		getDataFromRNG();
 	    processData();
 		List<XYChart> charts = new ArrayList<XYChart>();
@@ -202,7 +197,7 @@ public class TestRNG {
 	    	charts.add(chart);
 	    }
 	    new SwingWrapper<XYChart>(charts).displayChartMatrix();
-	 }
+	 }*/
 	
 	
 	class HeapWithInformation {
