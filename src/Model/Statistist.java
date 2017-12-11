@@ -37,7 +37,6 @@ public class Statistist {
 	private double[][] servicedQuantityGNU;
 	private double[][] rejectedQuantityGNU;
 
-
 	private double[][] averageTimeInSystemGNU;
 	private double[][] averageTimeInQueueGNU;
 	private double[][] averageTimeInServerGNU;
@@ -49,6 +48,8 @@ public class Statistist {
 	private double[][] averageDataForGNU;
 
 	private Deque<double[][]> information;
+	private Deque<double[][]> batchInformation;
+
 	private Deque<double[][]> averageInformation;
 	private Deque<Deque<Information>> allInform;
 	private Deque<Information> systemInform;
@@ -97,21 +98,20 @@ public class Statistist {
 		averageInformation.offerLast(averageTimeInServerGNU = new double[arraySize][2]);
 		averageInformation.offerLast(averageServicedQuantityGNU = new double[arraySize][2]);
 		averageInformation.offerLast(averageRejectedQuantityGNU = new double[arraySize][2]);
-		
+
 		periodPlotY = new ArrayList<String>();
-		periodPlotY.add("TimeInSystemPeriodRecord");
-		periodPlotY.add("TimeInQueuePeriodRecord");
-		periodPlotY.add("TimeInServerPeriodRecord");
-		periodPlotY.add("PeriodServicedQuantity");
-		periodPlotY.add("PeriodRejectedQuantity");
-	
+		periodPlotY.add("TimeInSystemPeriodRecord_OXY");
+		periodPlotY.add("TimeInQueuePeriodRecord_OXY");
+		periodPlotY.add("TimeInServerPeriodRecord_OXY");
+		periodPlotY.add("PeriodServicedQuantity_OXY");
+		periodPlotY.add("PeriodRejectedQuantity_OXY");
 
 		averagePlotY = new ArrayList<String>();
-		averagePlotY.add("AverageTimeInSystem");
-		averagePlotY.add("AverageTimeInQueue");
-		averagePlotY.add("AverageTimeInServer");
-		averagePlotY.add("AverageServicedCustomerQuantity");
-		averagePlotY.add("AverageRejectedCustomerQuantity");
+		averagePlotY.add("AverageTimeInSystem_OXY");
+		averagePlotY.add("AverageTimeInQueue_OXY");
+		averagePlotY.add("AverageTimeInServer_OXY");
+		averagePlotY.add("AverageServicedCustomerQuantity_OXY");
+		averagePlotY.add("AverageRejectedCustomerQuantityOXY");
 	}
 
 	private void startUp() {
@@ -128,6 +128,10 @@ public class Statistist {
 			totalServicedCustomer += totalStatisticalData.pollFirst().getAverageTime();
 			totalRejectedCustomer += totalStatisticalData.pollFirst().getAverageTime();
 		}
+		double avg = 0;
+		double time = 0;
+		double sumAvg = 0;
+		double total = 0;
 		while (!pitcher.isEmpty()) {
 			Deque<Information> temp = pitcher.pollFirst();
 			dataForGNU = information.pollFirst();
@@ -135,56 +139,69 @@ public class Statistist {
 			System.out.println(temp == null);
 			System.out.println(temp.isEmpty());
 			int index = 0;
-			double avg = 0;
-			double time = 0;
-			double sumAvg = 0;
+			int counter = 0;
 			while (!temp.isEmpty()) {
+				counter++;
 				Information inform = temp.pollFirst();
 				avg = inform.getAverageTime();
 				time = inform.getTime();
 				sumAvg += avg;
-				dataForGNU[index][1] += avg / runTimes;
+
+				dataForGNU[index][1] += sumAvg / runTimes;
 				dataForGNU[index][0] += time / runTimes;
 				averageDataForGNU[index][0] += time / runTimes;
 				index++;
+				sumAvg = 0;
 			}
 			if (sumAvg != 0) {
-				System.out.println("-------------------sumAvg is: " + sumAvg + "---------------------------");
+				System.out.println("-------------------sumAvg is: " + total + "---------------------------");
 				System.out.println("-------------------sumAvg / (runTimes * arraySize) is: "
-						+ sumAvg / (runTimes * arraySize) + "---------------------------");
+						+ total / (runTimes * arraySize) + "---------------------------");
 				for (int i = 0; i < averageDataForGNU.length; i++) {
 					averageDataForGNU[i][1] += sumAvg / (runTimes * arraySize);
 				}
 			}
+			total = 0;
 			information.offerLast(dataForGNU);
 			averageInformation.offerLast(averageDataForGNU);
+		}
+	}
+
+	private void calculateBatch() {
+		this.batchInformation = new LinkedList<double[][]>();
+		int index = 0;
+		while (this.information != null) {
+			double[][] temp = information.pollFirst();
+			for (int i = 0; i < temp.length; i++) {
+
+			}
 		}
 	}
 
 	public boolean dataReporterReady() {
 		try {
 			systemInformoutputPath = new FileWriter(
-					new File("/Users/mali/Desktop/555Project/data&report/systemInform.csv"));
+					new File("/Users/mali/Desktop/555Project/data&report_oxygen_nostop/systemInform.csv"));
 			systemInformWriter = new BufferedWriter(systemInformoutputPath);
 
 			queueInformOutputPath = new FileWriter(
-					new File("/Users/mali/Desktop/555Project/data&report/queueInform.csv"));
+					new File("/Users/mali/Desktop/555Project/data&report_oxygen_nostop/queueInform.csv"));
 			queueInformWriter = new BufferedWriter(queueInformOutputPath);
 
 			serverInformOutputPath = new FileWriter(
-					new File("/Users/mali/Desktop/555Project/data&report/serverInform.csv"));
+					new File("/Users/mali/Desktop/555Project/data&report_oxygen_nostop/serverInform.csv"));
 			serverInformWriter = new BufferedWriter(serverInformOutputPath);
 
-			servicedCustomerQuantityOutputPath = new FileWriter(
-					new File("/Users/mali/Desktop/555Project/data&report/servicedCustomerQuantityInform.csv"));
+			servicedCustomerQuantityOutputPath = new FileWriter(new File(
+					"/Users/mali/Desktop/555Project/data&report_oxygen_nostop/servicedCustomerQuantityInform.csv"));
 			servicedCustomerQuantityWriter = new BufferedWriter(servicedCustomerQuantityOutputPath);
 
-			rejectedCustomerQuantityOutputPath = new FileWriter(
-					new File("/Users/mali/Desktop/555Project/data&report/rejectedCustomerQuantityInform.csv"));
+			rejectedCustomerQuantityOutputPath = new FileWriter(new File(
+					"/Users/mali/Desktop/555Project/data&report_oxygen_nostop/rejectedCustomerQuantityInform.csv"));
 			rejectedCustomerQuantityWriter = new BufferedWriter(rejectedCustomerQuantityOutputPath);
 
 			totalRatioOutputPath = new FileWriter(
-					new File("/Users/mali/Desktop/555Project/data&report/totalRatio.csv"));
+					new File("/Users/mali/Desktop/555Project/data&report_oxygen_nostop/totalRatio.csv"));
 			totalRatioWriter = new BufferedWriter(totalRatioOutputPath);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -246,10 +263,9 @@ public class Statistist {
 			queueInformWriter.flush();
 			serverInformWriter.flush();
 			servicedCustomerQuantityWriter.flush();
-			
 
 			rejectedCustomerQuantityWriter.flush();
-	
+
 			totalRatioWriter.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -263,10 +279,8 @@ public class Statistist {
 			queueInformWriter.close();
 			serverInformWriter.close();
 			servicedCustomerQuantityWriter.close();
-			
 
 			rejectedCustomerQuantityWriter.close();
-			
 
 			totalRatioWriter.close();
 		} catch (IOException e) {
@@ -324,6 +338,7 @@ public class Statistist {
 		for (int i = 0; i < expert.runTimes; i++) {
 			expert.startUp();
 		}
+
 		boolean initiateReporter = expert.dataReporterReady();
 		boolean reportFlag = false;
 		if (initiateReporter) {

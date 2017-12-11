@@ -4,7 +4,7 @@
 package Model;
 
 /**
- * @author mali
+ * Customer has three time stamps. With these stamps, system states could be calculated
  *
  */
 class Customer extends Task {
@@ -92,6 +92,7 @@ class Customer extends Task {
 		return this.type + this.id;
 	}
 
+	// Customer itself is a TimerTask. The host server schedules a service time for it
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub

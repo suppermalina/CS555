@@ -1,7 +1,6 @@
 /**
  * 
  */
-package Model;
 
 import java.util.Observable;
 import java.util.Timer;
@@ -9,7 +8,6 @@ import java.util.TimerTask;
 
 
 /**
- * @author mali
  *
  */
 abstract class Task extends TimerTask {

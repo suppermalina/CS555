@@ -1,7 +1,6 @@
 /**
  * 
  */
-package Model;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,9 +10,11 @@ import java.util.*;
 import java.util.concurrent.locks.*;
 
 /**
- * @author mali
- *
- */
+ *  The main purpose of this class is to collect system data peridicaly
+ *  It implements the TimerTask, so it can be scheduled to collect data with a assigned time period
+ *  takeServiceInformation() collects information brings by customers who already took service
+ *  takeRejcetedInformation() records information for those customers rejected by the system.
+ */ 
 class InformationCollector extends TimerTask {
 	private long[] systemContainer;
 	private long[] serverContainer;
@@ -70,9 +71,6 @@ class InformationCollector extends TimerTask {
 		this.finalStatistic = new LinkedList<Information>();
 	}
 
-	protected void setPeriod(double period) {
-		this.samplingPeriod = period;
-	}
 
 	protected void takeServiceInformation(Task servicedCustomer) {
 		Customer informationProvider = (Customer) servicedCustomer;
@@ -151,7 +149,7 @@ class InformationCollector extends TimerTask {
 			if (lock.tryLock()) {
 				try {
 					double timeStamp = Controller.clock.CLOCK() / 1000.0;
-					double avgTimeInSystem = ((double) systemContainer[0] / 1000.0);
+					double avgTimeInSystem = ((double) systemContainer[0] / 1000.0 );
 					double avgTimeInQueue = ((double) queueContainer[0] / 1000.0);
 					double avgTimeInServer = ((double) serverContainer[0] / 1000.0);
 					double periodServiced = servicedContainer[0];
@@ -182,6 +180,7 @@ class InformationCollector extends TimerTask {
 		System.out.println(serverInformationLink.peekLast().getAverageTime());
 		System.out.println(servicedQuantityInformationLink.peekLast().getAverageTime());
 		System.out.println(rejectedQuantityInformationLink.peekLast().getAverageTime());
+		trigger = false;
 	}
 
 }

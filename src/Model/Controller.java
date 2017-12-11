@@ -13,9 +13,9 @@ import java.util.concurrent.locks.*;
 import Model.*;
 
 class Controller {
-	private double lambda = 0.5;
+	private double lambda = 0.1;
 	protected static double endingTime = 60000.0;
-	protected static double period = 500.0;
+	protected static double period = 10000.0;
 	
 	// This flag is used to inform the GenerateCustomer
 	protected static boolean flag = true;
@@ -88,10 +88,10 @@ class Controller {
 		initialTime = clock.CLOCK();
 		System.out.println(initialTime);
 		
-		//boolean starts = model.specialSituation_PartialFull(4);
-		//if (starts) {
+		boolean starts = model.specialSituation_PartialFull(4);
+		if (starts) {
 			model.modify();
-		//}
+		}
 		
 		model.setTimeTask();
 		

@@ -1,15 +1,14 @@
 /**
  * 
  */
-package Model;
-
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Timer;
 
 /**
- * @author mali
+ * The ModelSystem is a plant, Data plant. It accepts signals from the controller, then pass them to the queue or server.
+ * Such a class allowes us to increase the amounts of servers and queues in the future
  *
  */
 class ModelSystem extends Containers {
@@ -30,8 +29,10 @@ class ModelSystem extends Containers {
 		this.pitch = new LinkedList<Deque<Information>>();
 	}
 
+
+	// This method assigns the sampling period to the informationcollector
 	protected void setTimeTask() {
-		timer.schedule(collector, (long) samplingPeriod, (long) samplingPeriod);
+		timer.schedule(collector, 10000l, (long) samplingPeriod);
 	}
 
 	/*
@@ -48,6 +49,8 @@ class ModelSystem extends Containers {
 
 	}
 
+
+	// Close those classes implemented the TimerTask
 	protected void cleanUnexecutedTasks() {
 		server.cleanUnexecutedTasks();
 		queue.cleanUnexecutedTasks();
@@ -64,6 +67,8 @@ class ModelSystem extends Containers {
 
 	}
 
+
+	// This method grasps those customers who just left server and passes them to the information collector
 	protected static boolean customersOutFromServer(Task t) {
 		if (t != null) {
 			collector.takeServiceInformation(t);
@@ -75,6 +80,7 @@ class ModelSystem extends Containers {
 		return queue.getSize() + server.getSize();
 	}
 
+	// These two specialSituation methods are use to simulate the situation in which the system is not empty at the begining.
 	protected boolean specialSituation_SystemFull() {
 		for (int i = 0; i < 2; i++) {
 			server.servers[i].takeTaskIn(new Customer());
@@ -98,11 +104,13 @@ class ModelSystem extends Containers {
 		return true;
 	}
 
+	// modify() can bring the system into the normal state
 	protected void modify() {
 		server.servers[0].modify();
 		server.servers[1].modify();
 	}
 
+	// pitcher passes all data collected by the information collector to the statist
 	protected Deque<Deque<Information>> pitcher() {
 		pitch.offerLast(collector.getSystemInform());
 		pitch.offerLast(collector.getQueueInform());
